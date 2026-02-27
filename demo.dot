@@ -3,4 +3,5 @@ digraph G {
     B -> C [label="0"];
     C -> A [label="1"];
     A -> D [label="0"];
+    D ->B  [label="1"];
 }
