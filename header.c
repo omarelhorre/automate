@@ -22,8 +22,8 @@ void readDot(Automate protocol)
 	while( fscanf(f," %d -> %d [label=\"%c\"]",&src,&dest,&val ) == 3)
 			{
 				protocol.transitions[i].etat_dep = src;
-				protocol.transitions[i].etat_arrive = dest;
-				protocol.tranisitions[i].lettre = val;
+				protocol.transitions[i].etat_arriv = dest;
+				protocol.transitions[i].lettre = val;
 				i++;
 			}
 	}
@@ -40,15 +40,15 @@ void automateShow(Automate protocol)
 	printf("Voici la liste d'alphabet : ");	
 	for(int k = 0; k<10 ; k++)
 	{
-		printf("[%c] ", protocol.alphabet[k]);
+		printf("[%c] ", protocol.Alphabet[k]);
 	}
 
 	printf("Voici la liste des transitions : ");	
 	for(int i = 0; i<20 ; i++)
 	{
 
-		printf("[%d] -> %c -> [%d]\n",protocol.transition[i].etat_dep,protocol.transition[i].lettre,protocol.transition[i].etat_arrive);
+		printf("[%d] -> %c -> [%d]\n",protocol.transitions[i].etat_dep,protocol.transitions[i].lettre,protocol.transitions[i].etat_arriv);
 	}
-	printf("l'etat finale est %d", protocol.etat_finale);
+	printf("l'etat finale est %d", protocol.etat_final);
 }
 

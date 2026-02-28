@@ -1,6 +1,5 @@
 #include<stdio.h>
 #include<stdlib.h>
-
 typedef struct Transition{
     int etat_dep;
     int etat_arriv;

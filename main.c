@@ -9,7 +9,7 @@ int main()
 	switch(output)
 	{
 		case 1 : readDot(automate);
-		case 2 : automate(automate);
+		case 2 : automateShow(automate);
 	}
 	return 0;
 }
