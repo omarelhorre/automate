@@ -7,8 +7,8 @@ int main()
 	int output = menu();
 	switch(output)
 	{
-		case 1 : readDot();
-		case 2 : automate();
+		//case 1 : readDot();
+		//case 2 : automate();
 	}
 	return 0;
 }

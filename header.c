@@ -4,12 +4,12 @@
 int menu(void)
 	{
 		int choice;
-		printf("-----------AUTOMATE--------\n""1. Charger l'automate depuis graph.dot\n""2. Lire l'automate");
-		scanf(%d,&choice);
+		printf("-----------AUTOMATE--------\n""1. Charger l'automate depuis graph.dot\n""2. Lire l'automate\n");
+		scanf("%d",&choice);
 		return choice;
 	}
 
-
+/*
 #define MAX 20
 int A[MAX][MAX];
 char val[MAX][MAX];
@@ -54,7 +54,4 @@ void readDot(int A[MAX][MAX], val[MAX][MAX])
 				val[i][j] = label;
 			}
 	}
-void writeDot(int A[MAX][MAX], val[MAX][MAX])
-	{
-	
-	}
+*/ 
