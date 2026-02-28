@@ -11,6 +11,8 @@ int menu(void)
 
 void readDot(Automate protocol)
 	{
+		int src,dest,i;
+		char val;
 	FILE* f;
 	fptr = fopen("graph.dot","r");
 	if(fptr == NULL)
@@ -20,7 +22,7 @@ void readDot(Automate protocol)
 	while( fscanf(f," %d -> %d [label=\"%c\"]",&src,&dest,&val ) == 3)
 			{
 				protocol.transition[i].etat_dep = src;
-				protocol.transition[î].etat_arrive = dest;
+				protocol.transition[i].etat_arrive = dest;
 				protocol.tranisition[i].lettre = val;
 			}
 	}
