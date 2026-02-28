@@ -13,3 +13,4 @@ typedef struct Automate{
     int etat_initial;
     int etat_final;
 }Automate;
+
