@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "structs.h"
 #include <stdbool.h>
+#include <string.h>
 Automate protocol;
 int lengthEt = 0,lengthAlp = 0,inic=0,finc=0, nbTransition = 0;
 int menu(void){
@@ -39,6 +40,7 @@ bool rechercherAlphabet(char etatChar)
 
 void readDot(){
 		char src,dest,val,ligne[100];
+		char buff[20];
 	FILE* f;
 	f = fopen("demo.dot","r");
 	if(f == NULL){
@@ -84,9 +86,9 @@ void readDot(){
 			 protocol.etat_initial[inic] = src;	
 			 inic++;
 			}
-	else if(sscanf(ligne," %c -> fin;", &src) == 1)
+	else if(sscanf(ligne," %c -> %[^;];", &src,buff) == 2)
 			{
-
+			if (strcmp(buff,"fin") != 0) continue ;
 			 protocol.etat_final[finc] = src;
 			 finc++;
 			}
