@@ -49,6 +49,7 @@ void readDot(Automate *protocol,char *fichier){
 	f = fopen(fichier,"r");
 	if(f == NULL){
 			printf("Fichier introuvable, veuillez vous assurez de l'emplacement du fichier.");
+			exit(EXIT_FAILURE);
 	}
 	while(fgets(ligne, sizeof(ligne), f))
 	{
