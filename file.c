@@ -116,15 +116,15 @@ void automateShow(Automate protocol){
 	for( i = 0; i< protocol.finc ; i++){
 		printf("[%c] ",protocol.etat_finaux[i]);
 	}
+    printf("\n");
 }
 void MaxTransitions(Automate *protocol){
     int maxSort = 0, maxEntr = 0;
     char etatMaxSort, etatMaxEntr;
-  int i ,j;
+    int i ,j;
     for(i= 0; i < protocol->nbr_etat; i++){
         int nbSorties = 0;
         int nbEntrees = 0;
-
         for( j = 0; j < protocol->nbr_trans; j++){
             if(protocol->transitions[j].etat_dep == protocol->etats[i]){
                 nbSorties++;
@@ -138,43 +138,53 @@ void MaxTransitions(Automate *protocol){
             maxSort = nbSorties;
             etatMaxSort = protocol->etats[i];
         }
-
         if(nbEntrees > maxEntr){
             maxEntr = nbEntrees;
             etatMaxEntr = protocol->etats[i];
         }
     }
-
     printf("Etat avec max transitions sortantes : %c (%d)\n", etatMaxSort, maxSort);
     printf("Etat avec max transitions entrantes : %c (%d)\n", etatMaxEntr, maxEntr);
 }
-void afficherEtatsAvecTransition(Automate *protocol, char lettre) {
-    bool aTransition = false;
+void afficherEtatsAvecTransition(Automate *A, char lettre) {
+    bool existe = false;
     printf("Transitions etiquetees par '%c' :\n", lettre);
-
-    for (int i = 0; i < protocol->nbr_etat; i++) {
-
-        
-
-        for (int j = 0; j < protocol->nbr_trans; j++) {
-
-            if (protocol->transitions[j].etat_dep == protocol->etats[i] &&
-                protocol->transitions[j].lettre == lettre) {
-
-                if (!aTransition) {
-                    printf("Etat [%c] -> ", protocol->etats[i]);
-                    aTransition = true;
+    for (int i = 0; i < A->nbr_etat; i++) {
+        for (int j = 0; j < A->nbr_trans; j++) {
+            if (A->transitions[j].etat_dep == A->etats[i] && A->transitions[j].lettre == lettre){
+                if (!existe){
+                    printf("Etat [%c] -> ", A->etats[i]);
+                    existe = true;
                 }
-
-                printf("[%c] ", protocol->transitions[j].etat_arriv);
+                printf("[%c] ", A->transitions[j].etat_arriv);
             }
         }
-
-        
     }
-    if (!aTransition) {
-        printf("n'existe pas\n");
+    if(!existe){
+        printf("N'existe pas.\n");
     }
+}
+void sauvgarder(Automate a){
+    int i;
+    FILE *f = fopen("automate_utilisateur.dot", "w");
+    if(f == NULL) {
+        printf("erreur lors la creation du fichier\n");
+        return;
+    }
+    fprintf(f, "digraph G {\n");
+    fprintf(f, "init [shape=point];\n");
+    for( i = 0; i < a.inic; i++){
+         fprintf(f, "init -> %c;\n", a.etat_initiaux[i]);
+    }
+    for(i = 0; i < a.nbr_trans; i++){
+        fprintf(f, "%c -> %c [label=\"%c\"];\n",a.transitions[i].etat_dep,a.transitions[i].etat_arriv,a.transitions[i].lettre);
+    }
+    for(i = 0; i < a.finc; i++){
+        fprintf(f, "%c -> fin;\n", a.etat_finaux[i]);
+    }
+    fprintf(f, "}\n");
+    fclose(f);
+    printf("Fichier 'automate_utilisateur.dot' genere avec succes.\n");
 }
 /*
 void SaveAcceptedWords(Automate *A){
@@ -192,27 +202,65 @@ void SaveAcceptedWords(Automate *A){
 }*/
 int menu(void){
 		int choice;
-		printf("-----------AUTOMATE--------\n""1. Lire l'automate depuis graph.dot\n""2. Afficher les informations de l'automate\n""3.Quitter\n""Votre choix: ");
-		scanf("%d",&choice);
+		printf("\n-----------AUTOMATE--------\n");
+        printf("1.Lire l'automate depuis graph.dot .  \n2.Afficher les informations de l'automate.  \n");
+        printf("3.Generer un fichier.dot .  \n4.Afficher l'etat avec le plus grand nombre des transitions.  \n");
+        printf("5.Afficher les etat avec transition etiquete .  \n6.Tester un mot  \n7.extraire Mots accepter ds un fichier.\n");
+        printf("0.Quitter le programme.  \nentrer votre choix: ");
+        scanf("%d",&choice);
 		return choice;
-	}
+}
 int main(){
 	Automate a;
 	int output;
 	do{
-	output = menu();
-	switch(output){
-		case 1 : {
-			readDot(&a,"demo.dot");
-			printf("lecture du fichier avec succes.\n");
-			break; }
-		case 2 : {
-			automateShow(a); 
-			printf("\n");
-			break;}
-		case 3 : printf("Fin du programme\n"); break;
-		default : printf("Entrer un choix valide s'il vous plait!\n");
-	}
-	}while(output !=3);
+	    output = menu();
+	    switch(output){
+            case 1 : {
+                readDot(&a,"demo.dot");
+                printf("lecture du fichier avec succes.\n");
+                break; }
+            case 2 : {
+                automateShow(a); 
+                break;}
+            case 3 :{
+                int x;
+                printf("pour generer depuis une autre automate entrer 1. \npour generer depuis l'ancienne automate entrer 2.\nvotre choix: ");
+                do{
+                    scanf("%d",&x);
+                    if(x!=1 && x!=2)
+                        printf("choix invalide,veuillez ressayez: \n");
+                }while(x!=1 && x!=2);
+                if( x == 1){
+                    //generer();
+                    //sauvgarder();
+                }
+                else{
+                    sauvgarder(a);break;
+                }}
+            case 4 : {
+                MaxTransitions(&a);break;}
+            case 5 : {
+                char c;
+                printf("entrer la lettre : ");
+                scanf(" %c",&c);
+                afficherEtatsAvecTransition(&a,c);
+                break;
+            }
+            case 6 :{
+                char mot[20];
+                printf("entrer le mot a tester : ");
+                scanf(" %s",mot);
+                //estAccepter(a,mot);
+                break;
+            }
+            case 7 : {
+                //saveAcceptedMot(&a);
+                break;
+            }
+            case 0 : printf("Fin du programme\n"); break;
+            default : printf("Entrer un choix valide s'il vous plait!\n");
+        }
+	}while(output !=0);
 	return 0;
 }
