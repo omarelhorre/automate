@@ -20,7 +20,7 @@ typedef struct Automate{
 	int finc;//nbr des etats finaux
 }Automate;
 bool rechercherEtat(Automate *protocol, char etatChar){
-	for(int i = 0 ; i<= protocol->nbr_etat;i++){
+	for(int i = 0 ; i< protocol->nbr_etat;i++){
 		if(protocol->etats[i] == etatChar ){
 			return true;
 		}
@@ -28,8 +28,20 @@ bool rechercherEtat(Automate *protocol, char etatChar){
 		return false;
 
 }
+
+bool rechercherEtatFinale(Automate *protocol, char etatChar){
+	for(int i = 0 ; i< protocol->finc; i++){
+		if(protocol->etat_finaux[i] == etatChar ){
+			return true;
+		}
+	}
+		return false;
+
+}
+
+
 bool rechercherAlphabet(Automate *protocol, char etatChar){
-	for(int i = 0 ; i<= protocol->nbr_alph;i++){
+	for(int i = 0 ; i< protocol->nbr_alph;i++){
 		if(protocol->Alphabet[i] == etatChar ){
 			return true;
 		}
@@ -81,7 +93,7 @@ void readDot(Automate *protocol,char *fichier){
 		}//stockage des etats initiaux et finaux
 	else if(sscanf(ligne," init -> %c;", &src) == 1)
 			{
-			 protocol->etat_initiaux[protocol->inic] = src;	
+			 protocol->etat_initiaux[protocol->inic] = src;
 			 protocol->inic++;
 			}
 	else if(sscanf(ligne," %c -> %[^;];", &src,buff) == 2)
@@ -97,34 +109,83 @@ void readDot(Automate *protocol,char *fichier){
 	}
 void automateShow(Automate protocol){
 	int i;
-	printf("Voici la liste des etats :\n");	
+	printf("Voici la liste des etats :\n");
 	for( i = 0; i< protocol.nbr_etat ; i++){
 		printf("[%c] ",protocol.etats[i]);
 	}
-	printf("\nVoici la liste d'alphabet : \n");	
+	printf("\nVoici la liste d'alphabet : \n");
 	for(i = 0; i< protocol.nbr_alph ; i++){
 		printf("[%c] ", protocol.Alphabet[i]);
 	}
-	printf("\nVoici la liste des transitions :\n");	
+	printf("\nVoici la liste des transitions :\n");
 	for( i = 0; i< protocol.nbr_trans ; i++){
 		printf("[%c] -> %c -> [%c]\n",protocol.transitions[i].etat_dep,protocol.transitions[i].lettre,protocol.transitions[i].etat_arriv);
 	}
-	printf("\nVoici la liste des etats initiaux :\n");	
+	printf("\nVoici la liste des etats initiaux :\n");
 	for( i = 0; i< protocol.inic ; i++){
 		printf("[%c] ",protocol.etat_initiaux[i]);
 	}
-	printf("\nVoici la liste des etats finaux :\n");	
+	printf("\nVoici la liste des etats finaux :\n");
 	for( i = 0; i< protocol.finc ; i++){
 		printf("[%c] ",protocol.etat_finaux[i]);
 	}
 }
+void afficherEtatsAvecTransition(Automate *protocol, char lettre) {
+
+    printf("Transitions etiquetees par '%c' :\n", lettre);
+	        bool aTransition = false;
+
+    for (int i = 0; i < protocol->nbr_etat; i++) {
+
+        for (int j = 0; j < protocol->nbr_trans; j++) {
+
+            if (protocol->transitions[j].etat_dep == protocol->etats[i] &&
+                protocol->transitions[j].lettre == lettre) {
+					aTransition = true;
+                if (aTransition) {
+                    printf("Etat [%c] -> ", protocol->etats[i]);
+					printf("[%c] ", protocol->transitions[j].etat_arriv);
+					printf("\n");
+                }
+
+            }
+        }
+
+    }
+	if (!aTransition) {
+            printf("\n");
+			printf("unfound");
+        }
+}
+
+bool Exists(Automate* protcol, char * str)
+{
+	char act = protcol->etat_initiaux[0];
+	bool isThere;
+	for(int i = 0; i<strlen(str) ; i++)
+	{
+		isThere = false;
+		for(int j = 0; j<protcol->nbr_trans ; j++)
+		{
+			if(protcol->transitions[j].etat_dep == act && protcol->transitions[j].lettre == str[i])
+			{
+				act = protcol->transitions[j].etat_arriv;
+				isThere = true;
+				break;
+			}
+		}
+		if(!isThere) return false;
+	}
+	return rechercherEtatFinale(protcol,act);
+}
 int menu(void){
 		int choice;
-		printf("-----------AUTOMATE--------\n""1. Lire l'automate depuis graph.dot\n""2. Afficher les informations de l'automate\n""3.Quitter\n""Votre choix: ");
+		printf("-----------AUTOMATE--------\n""1. Lire l'automate depuis graph.dot\n""2. Afficher les informations de l'automate\n" "3. Afficher les etats avec transition par lettre\n""4.Verifier si un mot appartient au lanage\n""Votre choix: ");
 		scanf("%d",&choice);
 		return choice;
 	}
 int main(){
+	char mot[50];
 	Automate a;
 	int output;
 	do{
@@ -135,12 +196,31 @@ int main(){
 			printf("lecture du fichier avec succes.\n");
 			break; }
 		case 2 : {
-			automateShow(a); 
+			automateShow(a);
 			printf("\n");
 			break;}
-		case 3 : printf("Fin du programme\n"); break;
+			case 3: {
+			    char lettre;
+			    printf("Entrer la lettre : ");
+			    scanf(" %c", &lettre);   // espace important avant %c
+			    afficherEtatsAvecTransition(&a, lettre);
+			    break;
+			    }
+		case 4:
+		printf("Entrer le mot a lire: ");
+		scanf("%s",mot);
+		while(getchar() != '\n');
+		if(Exists(&a,mot))
+		{
+			printf("Existe\n");
+		}
+		else {
+			printf("Introuvable\n");
+		}
+		break;
+		case (-1) : printf("Fin du programme\n"); break;
 		default : printf("Entrer un choix valide s'il vous plait!\n");
 	}
-	}while(output !=3);
+	}while(output !=(-1));
 	return 0;
 }
