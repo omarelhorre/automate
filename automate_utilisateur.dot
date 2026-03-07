@@ -1,9 +1,4 @@
 digraph G {
 init [shape=point];
-init -> 1;
-1 -> 2 [label="R"];
-2 -> 4 [label="T"];
-4 -> 5 [label="Y"];
-4 -> 6 [label="T"];
-6 -> fin;
+fin [shape=point];
 }
