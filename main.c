@@ -178,7 +178,7 @@ void MaxTransitions(Automate *protocol){
     int entrees[10] = {0};
     int i,j;
 
-    // compter les transitions
+    // compter les transitions POUR CHAQUE ETAT
     for(j = 0; j < protocol->nbr_trans; j++){
 
         for(i = 0; i < protocol->nbr_etat; i++){
@@ -215,23 +215,34 @@ void MaxTransitions(Automate *protocol){
 
     printf("\n");
 }
-void afficherEtatsAvecTransition(Automate *A, char lettre) {
-    bool existe = false;
+void afficherEtatsAvecTransition(Automate *protocol, char lettre) {
+
     printf("Transitions etiquetees par '%c' :\n", lettre);
-    for (int i = 0; i < A->nbr_etat; i++) {
-        for (int j = 0; j < A->nbr_trans; j++) {
-            if (A->transitions[j].etat_dep == A->etats[i] && A->transitions[j].lettre == lettre){
-                existe = true;
-                if (existe){
-                    printf("Etat [%c] -> ", A->etats[i]);
-                    printf("[%c] \n", A->transitions[j].etat_arriv);
+    bool found  =false;
+    for (int i = 0; i < protocol->nbr_etat; i++) {
+
+        bool aTransition = false;
+
+        for (int j = 0; j < protocol->nbr_trans; j++) {
+
+            if (protocol->transitions[j].etat_dep == protocol->etats[i] &&
+                protocol->transitions[j].lettre == lettre) {
+
+                if (!aTransition) {
+                    printf("Etat [%c] -> ", protocol->etats[i]);
+                    aTransition = true;
+                    found = true;
                 }
+                printf("[%c] ", protocol->transitions[j].etat_arriv);
             }
         }
+        if (aTransition) {
+            printf("\n");
+        }
     }
-    if(!existe){
-        printf("N'existe pas.\n");
-    }
+    if (!found) {
+            printf("n'existe pas\n");
+        }
 }
 bool rechercherEtatFinale(Automate *protocol, char etatChar){
 	for(int i = 0 ; i< protocol->finc; i++){
@@ -262,10 +273,17 @@ bool Exists(Automate* protcol, char * str){
 		}
         if(!isThere) break;	
 	}
-    if(isThere == false) continue; else break;	
+    if(isThere == false) continue; 
+    else{
+        if(!rechercherEtatFinale(protcol,act)){
+            isThere = false;
+            continue;
+        }
+        else
+            break;
+    }	
     }
-    if(isThere) return rechercherEtatFinale(protcol,act);
-	else return false;
+    return isThere;
 }
 void sauvgarder(Automate a){
     int i;
