@@ -326,7 +326,7 @@ void SaveAcceptedWords(Automate *A){
 }
 int menu(void){
 		int choice;
-        printf("\033[1mNB : Dans le cas des données preexistantes, charger le fichier ajoute les données sans ecraser ceux de la structure.\033[0m");
+        printf("\033[1mNB : Dans le cas des donnees preexistantes, charger le fichier ajoute ecraser ceux de la structure.\033[0m");
 		printf("\n-----------AUTOMATE--------\n");
         printf("1. Lire l'automate depuis graph.dot .  \n2. Afficher les informations de l'automate.  \n");
         printf("3. Generer un fichier.dot .  \n4. Afficher l'etat avec le plus grand nombre des transitions.  \n");
@@ -336,7 +336,7 @@ int menu(void){
 		return choice;
 }
 int main(){
-	Automate a;
+	Automate a;  
 	int output;
 	do{
 	    output = menu();
@@ -350,7 +350,7 @@ int main(){
                 break;}
             case 3 :{
                 int x;
-                printf("\033[1mSi vous choisissez (1) Vos données de programme seront ecrasés!!!\n \033[0m\n");
+                printf("\033[1mSi vous choisissez (1) Vos donnees de programme seront ecrases!!!\n \033[0m\n");
                 printf("Pour generer depuis une autre automate entrer 1. \nPour generer depuis l'ancienne automate entrer 2.\nvotre choix: ");
                 do{
                     scanf("%d",&x);
