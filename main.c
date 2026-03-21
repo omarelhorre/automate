@@ -9,15 +9,15 @@ typedef struct Transition{
 }Transition;
 
 typedef struct Automate{
-    char etats[10];
+    char etats[20];
 	int nbr_etat;
-    Transition transitions[20];
+    Transition transitions[50];
 	int nbr_trans;
-    char Alphabet[8];
+    char Alphabet[10];
 	int nbr_alph;
     char etat_initiaux[5];
 	int inic;//nbr des etats initial
-    char etat_finaux[5];
+    char etat_finaux[10];
 	int finc;//nbr des etats finaux
 }Automate;
 
@@ -330,12 +330,102 @@ int menu(void){
         printf("1. Lire l'automate depuis graph.dot .  \n2. Afficher les informations de l'automate.  \n");
         printf("3. Generer un fichier.dot .  \n4. Afficher l'etat avec le plus grand nombre des transitions.  \n");
         printf("5. Afficher les etat avec transition etiquete .  \n6. Tester un mot  \n7. extraire Mots accepter ds un fichier.\n");
+        printf("8.supprimer les epsilons dans l'automate.\n");
         printf("0. Quitter le programme.\nEffectuer un choix: ");
         scanf("%d",&choice);
 		return choice;
 }
+//fct verifier qu'un transition n'existe deja dans le tableau des transition
+bool transitionExiste(Transition *tab, int nbr, char dep, char arriv, char lettre) {
+    for (int i = 0; i < nbr; i++) {
+        if (tab[i].etat_dep == dep && tab[i].etat_arriv == arriv && tab[i].lettre == lettre) {
+            return true;
+        }
+    }
+    return false;
+}
+
+//calcul le epsilon-close de chaque etat
+void calculFermetureEpsilon(Automate *A, char etat, char *fermeture, int *taille) {
+    fermeture[0] = etat; // L'état lui-même fait partie de sa fermeture
+    *taille = 1;
+    //parcoure A->transitions pour trouver tous les etats accessibles par epsilon 'e'
+    for (int i = 0; i < *taille; i++) {
+        char etat_courant = fermeture[i];
+        for (int j = 0; j < A->nbr_trans; j++) {
+            if (A->transitions[j].etat_dep == etat_courant && A->transitions[j].lettre == 'e') {
+                char etat_suivant = A->transitions[j].etat_arriv;
+                
+                //verifier si etat_suivant n'existe pas deja dans le tab du fermeture
+                bool exist = false;
+                for (int k = 0; k < *taille; k++) {
+                    if (fermeture[k] == etat_suivant) {
+                        exist = true;
+                        break;
+                    }
+                }
+                if (!exist) {
+                    fermeture[i+1] = etat_suivant;
+                    (*taille)++;
+                }
+            }
+        }
+    }
+}
+
+// fonction supprime les epsilons dans une automate
+void supprimerEpsilons(Automate *A) {
+    Transition nouvelles_trans[100]; // Tableau temporaire pour stocker les nouvelles transitions
+    int nbr_nouv = 0;//taile tableu nouv
+
+            for (int i = 0; i < A->nbr_etat; i++) {//parcour les etat du l'automate
+                char etat_actuel = A->etats[i];
+                char fermeture[A->nbr_etat];//epsilon-close de chaque etat
+                int taille = 0; //nombre des element dans le tableau fermeture
+
+                calculFermetureEpsilon(A, etat_actuel, fermeture, &taille);
+                //tester si l'etat actuel devient final
+                bool devient_final = false;
+                for (int j = 0; j < taille; j++) {
+                    if (rechercherEtatFinale(A, fermeture[j])) {
+                        devient_final = true;
+                        break;
+                    }
+                }
+                //verifier que l'etat actuel n'est pas deja un etat finale
+                if (devient_final && !rechercherEtatFinale(A, etat_actuel) && A->finc < 10) {
+                    A->etat_finaux[A->finc] = etat_actuel;
+                    A->finc++;
+                }
+                //chercher les nouvelles transitions a creer
+                for (int j = 0; j < taille; j++) {
+                    char etat_p = fermeture[j];
+                    
+                    // Chercher les transitions partant de p qui ne sont PAS des epsilons
+                    for (int k = 0; k < A->nbr_trans; k++) {
+                        if (A->transitions[k].etat_dep == etat_p && A->transitions[k].lettre != 'e') {
+                            if (!transitionExiste(nouvelles_trans, nbr_nouv, etat_actuel, A->transitions[k].etat_arriv, A->transitions[k].lettre)) {
+                                nouvelles_trans[nbr_nouv].etat_dep = etat_actuel;
+                                nouvelles_trans[nbr_nouv].etat_arriv = A->transitions[k].etat_arriv;
+                                nouvelles_trans[nbr_nouv].lettre = A->transitions[k].lettre;
+                                nbr_nouv++;
+                            }
+                        }
+                    }
+                }
+            }
+    //remplacer les ancienne transition par les nouvelles
+    A->nbr_trans = 0;
+    int i = 0;
+    while(i<nbr_nouv && i<50){
+        A->transitions[i] = nouvelles_trans[i];
+        A->nbr_trans++;
+        i++;
+    }
+    printf("Les transitions epsilon ont ete supprimees avec succes.\nAfficher l'automate pour y verifier.\n");
+}
 int main(){
-	Automate a;
+	Automate a;  
 	int output;
 	do{
 	    output = menu();
@@ -389,10 +479,13 @@ int main(){
                 SaveAcceptedWords(&a);
                 break;
             }
+            case 8 : {
+                supprimerEpsilons(&a);
+                break;
+            }
             case 0 : printf("Fin du programme\n"); break;
             default : printf("Entrer un choix valide s'il vous plait!\n");
         }
 	}while(output !=0);
-    free(&a);
 	return 0;
 }
