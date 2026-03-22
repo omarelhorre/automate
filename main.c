@@ -20,7 +20,11 @@ typedef struct Automate{
     char etat_finaux[10];
 	int finc;//nbr des etats finaux
 }Automate;
-
+void checkFile(FILE* test)
+{
+    if(test == NULL) perror("erreur ouverture");
+    else printf("fichier ouvert avec succés\n");
+}
 bool rechercherEtat(Automate *protocol, char etatChar){
 	for(int i = 0 ; i< protocol->nbr_etat;i++){
 		if(protocol->etats[i] == etatChar ){
@@ -94,7 +98,66 @@ void readDot(Automate *protocol,char *fichier){
 	protocol->nbr_trans = i;
 	fclose(f);
 }
+void Union(void)
+{
+    Automate autom1;
+    Automate autom2;
+    FILE* U = fopen("src/automate1.dot","r");
+    checkFile(U);
+    FILE* V = fopen("src/automate2.dot","r");
+    checkFile(V);
+    FILE* W = fopen("src/resultat.dot","w");
+    checkFile(W);
+    readDot(&autom1,"src/automate1.dot");
+    readDot(&autom2,"src/automate2.dot");
 
+
+    fprintf(W, "digraph G {\n");
+    fprintf(W, "init [shape=point];\n");
+    fprintf(W, "fin [shape=point];\n");
+    fprintf(W, "init -> qin;\n");
+    fprintf(W, "qin -> q0 [label=\"𝜖\"] ;\n");
+    fprintf(W, "qin -> q0p [label=\"𝜖\"] ;\n");    
+    for(int i = 0 ; i< autom1.inic ; i++)
+    fprintf(W, "q0 -> %c [label=\"𝜖\"];\n",autom1.etat_initiaux[i]);
+
+    for(int k = 0; k<autom1.nbr_trans ; k++)
+    {
+        fprintf(W, "%c -> %c [label=\"%c\"] ;\n",autom1.transitions[k].etat_dep,autom1.transitions[k].etat_arriv,autom1.transitions[k].lettre);    
+    }
+
+    for(int i = 0 ; i< autom2.inic ; i++)
+    fprintf(W, "q0p -> %c [label=\"𝜖\"];\n",autom2.etat_initiaux[i]);
+
+    for(int k = 0; k<autom2.nbr_trans ; k++)
+    {
+        fprintf(W, "%c -> %c [label=\"%c\"] ;\n",autom2.transitions[k].etat_dep,autom2.transitions[k].etat_arriv,autom2.transitions[k].lettre);    
+    }
+
+    //etats finaux
+
+    for(int i = 0 ; i< autom1.finc ; i++)
+    fprintf(W, "%c -> qf [label=\"𝜖\"];\n",autom1.etat_finaux[i]);
+
+    
+    for(int i = 0 ; i< autom2.finc ; i++)
+    fprintf(W, "%c -> qfp [label=\"𝜖\"];\n",autom2.etat_finaux[i]);
+
+
+    fprintf(W, "qf -> qfin [label=\"𝜖\"];\n");
+    fprintf(W, "qfp -> qfin [label=\"𝜖\"];\n");   
+
+
+
+    fprintf(W, "}");
+fclose(U);
+fclose(V);
+fclose(W);
+
+
+
+
+}
 void automateShow(Automate protocol){
 	int i;
 	printf("Voici la liste des etats :\n");
@@ -253,37 +316,42 @@ bool rechercherEtatFinale(Automate *protocol, char etatChar){
 		return false;
 
 }
-bool Exists(Automate* protcol, char * str){
-    char act;
-    bool isThere;
-    for(int k = 0 ; k<protcol->inic ; k++)
+//changement pour travailler sur NFA
+bool Exists(Automate* autom, char * str){
+    char courant[20], suivant[20];
+    int tailleCourant = 0, tailleSuivant = 0;
+
+    for(int k = 0; k<autom->inic ; k++)
     {
-	act = protcol->etat_initiaux[k];
-	for(int i = 0; i<strlen(str) ; i++)
-    {
-		isThere = false;
-		for(int j = 0; j<protcol->nbr_trans ; j++)
-        {
-			if(protcol->transitions[j].etat_dep == act && protcol->transitions[j].lettre == str[i])
-            {
-				act = protcol->transitions[j].etat_arriv;
-				isThere = true;
-				break;
-			}
-		}
-        if(!isThere) break;	
-	}
-    if(isThere == false) continue; 
-    else{
-        if(!rechercherEtatFinale(protcol,act)){
-            isThere = false;
-            continue;
-        }
-        else
-            break;
-    }	
+        courant[tailleCourant] = autom->etat_initiaux[k];
+        tailleCourant++;
     }
-    return isThere;
+
+    for(int i = 0; i< strlen(str); i++)
+    {
+        tailleSuivant = 0;
+        
+        for(int s = 0; s< tailleCourant ; s++)
+        {
+            for(int j = 0; j< autom->nbr_trans; j++)
+            {
+                if(autom->transitions[j].etat_dep == courant[s] && autom->transitions[j].lettre == str[i])
+                {
+                    suivant[tailleSuivant] = autom->transitions[j].etat_arriv;
+                    tailleSuivant++;
+                }
+            }
+        }
+        if(tailleSuivant==0) return false;
+
+        for(int x = 0; x<tailleSuivant; x++) courant[x] = suivant[x];
+        tailleCourant = tailleSuivant;
+    }
+    for(int s= 0; s<tailleCourant ; s++)
+    {
+        if(rechercherEtatFinale(autom,courant[s])) return true;
+    }
+    return false;
 }
 void sauvgarder(Automate a){
     int i;
@@ -481,6 +549,10 @@ int main(){
             }
             case 8 : {
                 supprimerEpsilons(&a);
+                break;
+            }
+            case 9:{
+                Union();
                 break;
             }
             case 0 : printf("Fin du programme\n"); break;
