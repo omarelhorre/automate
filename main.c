@@ -253,37 +253,42 @@ bool rechercherEtatFinale(Automate *protocol, char etatChar){
 		return false;
 
 }
-bool Exists(Automate* protcol, char * str){
-    char act;
-    bool isThere;
-    for(int k = 0 ; k<protcol->inic ; k++)
+//changement pour travailler sur NFA
+bool Exists(Automate* autom, char * str){
+    char courant[20], suivant[20];
+    int tailleCourant = 0, tailleSuivant = 0;
+
+    for(int k = 0; k<autom->inic ; k++)
     {
-	act = protcol->etat_initiaux[k];
-	for(int i = 0; i<strlen(str) ; i++)
-    {
-		isThere = false;
-		for(int j = 0; j<protcol->nbr_trans ; j++)
-        {
-			if(protcol->transitions[j].etat_dep == act && protcol->transitions[j].lettre == str[i])
-            {
-				act = protcol->transitions[j].etat_arriv;
-				isThere = true;
-				break;
-			}
-		}
-        if(!isThere) break;	
-	}
-    if(isThere == false) continue; 
-    else{
-        if(!rechercherEtatFinale(protcol,act)){
-            isThere = false;
-            continue;
-        }
-        else
-            break;
-    }	
+        courant[tailleCourant] = autom->etat_initiaux[k];
+        tailleCourant++;
     }
-    return isThere;
+
+    for(int i = 0; i< strlen(str); i++)
+    {
+        tailleSuivant = 0;
+        
+        for(int s = 0; s< tailleCourant ; s++)
+        {
+            for(int j = 0; j< autom->nbr_trans; j++)
+            {
+                if(autom->transitions[j].etat_dep == courant[s] && autom->transitions[j].lettre == str[i])
+                {
+                    suivant[tailleSuivant] = autom->transitions[j].etat_arriv;
+                    tailleSuivant++;
+                }
+            }
+        }
+        if(tailleSuivant==0) return false;
+
+        for(int x = 0; x<tailleSuivant; x++) courant[x] = suivant[x];
+        tailleCourant = tailleSuivant;
+    }
+    for(int s= 0; s<tailleCourant ; s++)
+    {
+        if(rechercherEtatFinale(autom,courant[s])) return true;
+    }
+    return false;
 }
 void sauvgarder(Automate a){
     int i;
