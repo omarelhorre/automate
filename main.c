@@ -116,11 +116,11 @@ void Union(void)
     fprintf(W, "digraph G {\n");
     fprintf(W, "init [shape=point];\n");
     fprintf(W, "fin [shape=point];\n");
-    fprintf(W, "init -> ∂;\n");
-    fprintf(W, "∂ -> θ [label=\"𝜖\"] ;\n");
-    fprintf(W, "∂ -> η [label=\"𝜖\"] ;\n");    
+    fprintf(W, "init -> q;\n");
+    fprintf(W, "q -> i [label=\"3\"] ;\n");
+    fprintf(W, "q -> I [label=\"3\"] ;\n");    
     for(int i = 0 ; i< autom1.inic ; i++)
-    fprintf(W, "θ -> %c [label=\"𝜖\"];\n",autom1.etat_initiaux[i]);
+    fprintf(W, "i -> %c [label=\"3\"];\n",autom1.etat_initiaux[i]);
 
     for(int k = 0; k<autom1.nbr_trans ; k++)
     {
@@ -128,7 +128,7 @@ void Union(void)
     }
 
     for(int i = 0 ; i< autom2.inic ; i++)
-    fprintf(W, "η -> %c [label=\"𝜖\"];\n",autom2.etat_initiaux[i]);
+    fprintf(W, "I -> %c [label=\"3\"];\n",autom2.etat_initiaux[i]);
 
     for(int k = 0; k<autom2.nbr_trans ; k++)
     {
@@ -138,16 +138,16 @@ void Union(void)
     //etats finaux
 
     for(int i = 0 ; i< autom1.finc ; i++)
-    fprintf(W, "%c -> λ [label=\"𝜖\"];\n",autom1.etat_finaux[i]);
+    fprintf(W, "%c -> f [label=\"3\"];\n",autom1.etat_finaux[i]);
 
     
     for(int i = 0 ; i< autom2.finc ; i++)
-    fprintf(W, "%c -> μ [label=\"𝜖\"];\n",autom2.etat_finaux[i]);
+    fprintf(W, "%c -> F [label=\"3\"];\n",autom2.etat_finaux[i]);
 
 
-    fprintf(W, "λ -> ρ [label=\"𝜖\"];\n");
-    fprintf(W, "μ -> ρ [label=\"𝜖\"];\n");   
-    fprintf(W, "ρ -> fin;\n");   
+    fprintf(W, "f -> p [label=\"3\"];\n");
+    fprintf(W, "F -> p [label=\"3\"];\n");   
+    fprintf(W, "p -> fin;\n");   
 
 
 
@@ -475,7 +475,7 @@ void supprimerEpsilons(Automate *A) {
                     
                     // Chercher les transitions partant de p qui ne sont PAS des epsilons
                     for (int k = 0; k < A->nbr_trans; k++) {
-                        if (A->transitions[k].etat_dep == etat_p && A->transitions[k].lettre != 'e') {
+                        if (A->transitions[k].etat_dep == etat_p && A->transitions[k].lettre != '3') {
                             if (!transitionExiste(nouvelles_trans, nbr_nouv, etat_actuel, A->transitions[k].etat_arriv, A->transitions[k].lettre)) {
                                 nouvelles_trans[nbr_nouv].etat_dep = etat_actuel;
                                 nouvelles_trans[nbr_nouv].etat_arriv = A->transitions[k].etat_arriv;
