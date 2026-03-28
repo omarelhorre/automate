@@ -453,7 +453,7 @@ void supprimerEtatsInaccessibles(Automate *A) {
     }
     A->finc = nbr_f_utiles;
 
-    printf("Les etats inaccessibles ont ete supprimes.\n");
+    // printf("Les etats inaccessibles ont ete supprimes.\n");
 }
 // fonction supprime les epsilons dans une automate
 void supprimerEpsilons(Automate *A) {

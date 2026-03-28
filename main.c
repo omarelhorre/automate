@@ -20,6 +20,7 @@ typedef struct Automate{
     char etat_finaux[10];
 	int finc;//nbr des etats finaux
 }Automate;
+void supprimerEpsilons(Automate *A);
 void checkFile(FILE* test)
 {
     if(test == NULL) perror("erreur ouverture");
@@ -76,7 +77,7 @@ void readDot(Automate *protocol,char *fichier){
             }
 		//stockage des alphabets
 		    if(protocol->nbr_alph < 8){
-			    if(rechercherAlphabet(protocol, val) == false){
+			    if(rechercherAlphabet(protocol, val) == false && val != '3'){
 					protocol->Alphabet[protocol->nbr_alph] = val;
 					protocol->nbr_alph++;
 			    }
@@ -333,22 +334,7 @@ void sauvgarder(Automate a){
     fclose(f);
     printf("Fichier 'automate_utilisateur.dot' genere avec succes.\n");
 }
-void SaveAcceptedWords(Automate *A){
-	char mot[10];
-	FILE *ftxt = fopen("fichier.txt","r");
-    FILE *fptr = fopen("MotsAccepter.txt","w");
-	if (ftxt == NULL || fptr == NULL){
-		printf("Fichier introuvable, veuillez vous assurez de l'emplacement du fichier.");
-		return;
-	}
-	while( fscanf(ftxt,"%s",mot) == 1){
-		if(Exists(A,mot) == true){
-		 	fprintf(fptr,"%s \n",mot);
-		}
-	}
-    fclose(fptr);
-    fclose(ftxt);
-}
+
 
 //fct verifier qu'un transition n'existe deja dans le tableau des transition
 bool transitionExiste(Transition *tab, int nbr, char dep, char arriv, char lettre) {
@@ -403,7 +389,7 @@ void supprimerEtatsInaccessibles(Automate *A) {
             char etat_courant = accessibles[i];
 
             for (int j = 0; j < A->nbr_trans; j++) {
-                if (A->transitions[j].etat_dep == etat_courant && A->transitions[j].lettre != '3') {
+                if (A->transitions[j].etat_dep == etat_courant) {
                     char etat_dest = A->transitions[j].etat_arriv;
                     
                     bool existe = false;//verifier que etat_dest n'est pas deja accessible
@@ -501,7 +487,7 @@ void supprimerEpsilons(Automate *A) {
                     
                     // Chercher les transitions partant de p qui ne sont PAS des epsilons
                     for (int k = 0; k < A->nbr_trans; k++) {
-                        if (A->transitions[k].etat_dep == etat_p && A->transitions[k].lettre != 'e') {
+                        if (A->transitions[k].etat_dep == etat_p && A->transitions[k].lettre != '3') {
                             if (!transitionExiste(nouvelles_trans, nbr_nouv, etat_actuel, A->transitions[k].etat_arriv, A->transitions[k].lettre)) {
                                 nouvelles_trans[nbr_nouv].etat_dep = etat_actuel;
                                 nouvelles_trans[nbr_nouv].etat_arriv = A->transitions[k].etat_arriv;
@@ -561,6 +547,22 @@ bool Exists(Automate* autom, char * str){
     return false;
 }
 
+void SaveAcceptedWords(Automate *A){
+	char mot[10];
+	FILE *ftxt = fopen("fichier.txt","r");
+    FILE *fptr = fopen("MotsAccepter.txt","w");
+	if (ftxt == NULL || fptr == NULL){
+		printf("Fichier introuvable, veuillez vous assurez de l'emplacement du fichier.");
+		return;
+	}
+	while( fscanf(ftxt,"%s",mot) == 1){
+		if(Exists(A,mot) == true){
+		 	fprintf(fptr,"%s \n",mot);
+		}
+	}
+    fclose(fptr);
+    fclose(ftxt);
+}
 typedef struct Fragment { // représente un petit automate temporaire
     int debut;
     int fin;
@@ -880,7 +882,7 @@ int main(){
                     printf("Erreur : un des automates est vide ou mal charge !\n");
                     break;
                 }
-                c = concatAutomates(&a1, &a2);
+               // c = concatAutomates(&a1, &a2);
 
                 printf("\n===== AUTOMATE RESULTAT  =====\n");
                 automateShow(c);
