@@ -1,4 +1,5 @@
 digraph G {
+<<<<<<< HEAD
     init [shape=point];
     fin [shape=point];
     init -> q;
@@ -15,4 +16,22 @@ digraph G {
     f -> p [label="b"];
     F -> p [label="3"];
     p -> fin;
+=======
+init [shape=point];
+fin [shape=point];
+init -> ∂;
+∂ -> θ [label="𝜖"] ;
+∂ -> η [label="𝜖"] ;
+θ -> 0 [label="𝜖"];
+0 -> 1 [label="a"] ;
+0 -> 3 [label="b"] ;
+η -> 8 [label="𝜖"];
+8 -> 9 [label="a"];
+9 -> 5 [label="a"];
+3 -> λ [label="𝜖"];
+5 -> μ [label="𝜖"];
+λ -> f [label="𝜖"];
+μ -> f [label="𝜖"];
+f -> fin;
+>>>>>>> f6a956f972cf01fcaa49bffa2c3f27ef56b6a154
 }
