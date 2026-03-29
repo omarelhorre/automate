@@ -1,18 +1,22 @@
 digraph G {
-init [shape=point];
-fin [shape=point];
-init -> ∂;
-∂ -> θ [label="𝜖"] ;
-∂ -> η [label="𝜖"] ;
-θ -> 0 [label="𝜖"];
-0 -> 1 [label="a"] ;
-0 -> 3 [label="b"] ;
-η -> 8 [label="𝜖"];
-8 -> 9 [label="a"] ;
-9 -> 5 [label="a"] ;
-3 -> λ [label="𝜖"];
-5 -> μ [label="𝜖"];
-λ -> ρ [label="𝜖"];
-μ -> ρ [label="𝜖"];
-ρ -> fin;
+init [shape=point style=filled, fillcolor=white color=white ];
+fin [shape=point style=filled, fillcolor=white color=white];
+init -> 100;
+100 -> 1 [label="E"];
+1 -> 2 [label="a"] ;
+3 -> 4 [label="b"] ;
+2 -> 3 [label="E"] ;
+5 -> 6 [label="b"] ;
+4 -> 5 [label="E"] ;
+100 -> 7 [label="E"];
+7 -> 8 [label="a"] ;
+9 -> 10 [label="b"] ;
+8 -> 9 [label="E"] ;
+11 -> 12 [label="b"] ;
+10 -> 11 [label="E"] ;
+13 -> 14 [label="4"] ;
+12 -> 13 [label="E"] ;
+6 -> 200 [label="E"];
+14 -> 200 [label="E"];
+200 -> fin;
 }

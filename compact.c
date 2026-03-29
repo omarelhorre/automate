@@ -98,27 +98,25 @@ void readDot(Automate *protocol,char *fichier){
 	protocol->nbr_trans = i;
 	fclose(f);
 }
-void Union(void)
+void Union(const char* a1, const char* a2)
 {
     Automate autom1;
     Automate autom2;
-    FILE* U = fopen("src/automate1.dot","r");
+    FILE* U = fopen(a1,"r");
     checkFile(U);
-    FILE* V = fopen("src/automate2.dot","r");
+    FILE* V = fopen(a2,"r");
     checkFile(V);
     FILE* W = fopen("src/resultat.dot","w");
     checkFile(W);
     readDot(&autom1,"src/automate1.dot");
     readDot(&autom2,"src/automate2.dot");
     fprintf(W, "digraph G {\n");
-    fprintf(W, "init [shape=point];\n");
-    fprintf(W, "fin [shape=point];\n");
-    fprintf(W, "init -> q;\n");
-    fprintf(W, "q -> i [label=\"E\"] ;\n");
-    fprintf(W, "q -> I [label=\"E\"] ;\n"); 
+    fprintf(W, "init [shape=point style=filled, fillcolor=white color=white ];\n");
+    fprintf(W, "fin [shape=point style=filled, fillcolor=white color=white];\n");
+    fprintf(W, "init -> 100;\n");
     //stock les etats initiales du 1er automate et ses transitions   
     for(int i = 0 ; i< autom1.inic ; i++)
-    fprintf(W, "i -> %d [label=\"E\"];\n",autom1.etat_initiaux[i]);
+    fprintf(W, "100 -> %d [label=\"E\"];\n",autom1.etat_initiaux[i]);
 
     for(int k = 0; k<autom1.nbr_trans ; k++)
     {
@@ -126,7 +124,7 @@ void Union(void)
     }
     //stock les etats initiales du 2eme automate et ses transitions
     for(int i = 0 ; i< autom2.inic ; i++)
-    fprintf(W, "I -> %d [label=\"E\"];\n",autom2.etat_initiaux[i]);
+    fprintf(W, "100 -> %d [label=\"E\"];\n",autom2.etat_initiaux[i]);
 
     for(int k = 0; k<autom2.nbr_trans ; k++)
     {
@@ -135,19 +133,12 @@ void Union(void)
     //etats finaux
 
     for(int i = 0 ; i< autom1.finc ; i++)
-    fprintf(W, "%d -> f [label=\"E\"];\n",autom1.etat_finaux[i]);
+    fprintf(W, "%d -> 200 [label=\"E\"];\n",autom1.etat_finaux[i]);
 
 
     for(int i = 0 ; i< autom2.finc ; i++)
-    fprintf(W, "%d -> F [label=\"E\"];\n",autom2.etat_finaux[i]);
-
-  
-    fprintf(W, "f -> p [label=\"E\"];\n");
-    fprintf(W, "F -> p [label=\"E\"];\n");   
-    fprintf(W, "p -> fin;\n");   
-
-
-
+    fprintf(W, "%d -> 200 [label=\"E\"];\n",autom2.etat_finaux[i]);
+    fprintf(W, "200 -> fin;\n");   
     fprintf(W, "}");
 fclose(U);
 fclose(V);
@@ -258,13 +249,13 @@ bool rechercherEtatFinale(Automate *protocol, int etatChar){
 		return false;
 
 }
-void sauvgarder(Automate a){
+void sauvgarder(Automate a,const char* str){
     int i;
-    FILE *f = fopen("automate_utilisateur.dot", "w");
+    FILE *f = fopen(str, "w");
     checkFile(f);
     fprintf(f, "digraph G {\n");
-    fprintf(f, "init [shape=point];\n");
-    fprintf(f, "fin [shape=point];\n");
+    fprintf(f, "init [shape=point shape=point style=filled, fillcolor=white color=white];\n");
+    fprintf(f, "fin [shape=point shape=point style=filled, fillcolor=white color=white];\n");
     for( i = 0; i < a.inic; i++){
          fprintf(f, "init -> %d;\n", a.etat_initiaux[i]);
     }
@@ -859,7 +850,12 @@ int main(){
                 automateShow(a);
                 break;}
             case 3 :{
-                sauvgarder(a);
+                printf("Entrer le nom du fichier a generer (ex: mon_automate.dot) : ");
+                char filename[100];
+                fgets(filename, 100, stdin);
+                while(getchar() != '\n');
+                printf("Creation de %s...\n", filename);
+                sauvgarder(a, filename);
                 break;
                 }
             case 4 : {
@@ -879,10 +875,10 @@ int main(){
                 while(getchar() != '\n');
                 if(testerMot(&a,mot))
                 {
-                    printf("Existe\n");
+                    printf("Le mot est accepte.\n");
                 }
                 else {
-                    printf("Introuvable\n");
+                    printf("Le mot n'est pas accepte.\n");
                 }
                 break;
             }
@@ -897,7 +893,42 @@ int main(){
                 break;
             }
             case 9:{
-                Union();
+                Automate autom1, autom2;
+                char regex1[100], regex2[100];
+                printf("Veuillez entrer la premiere expression reguliere (sans espaces) -1 pour annuler : ");
+                scanf("%s", regex1);
+                while(getchar() != '\n');                
+                if(strcmp(regex1, "-1") == 0){
+                    printf("Operation annulee.\n");
+                    printf("automate1.dot et automate2.dot ne seront pas generes.\n");
+                    break;
+                }
+                autom1.nbr_etat = 0;
+                autom1.inic = 0;
+                autom1.finc = 0;
+                autom1.nbr_trans = 0;
+                autom1.nbr_alph = 0;
+                construireAutomateThompson(regex1, &autom1);
+                sauvgarder(autom1,"src/automate1.dot" );
+                printf("Automate pour la premiere expression reguliere genere dans 'src/automate1.dot'.\n");
+
+                printf("Veuillez entrer la deuxieme expression reguliere (sans espaces) -1 pour annuler : ");
+                scanf("%s", regex2);
+                if(strcmp(regex2, "-1") == 0){
+                    printf("Operation annulee.\n");
+                    break;
+                }
+                while(getchar() != '\n');
+                
+                autom2.nbr_etat = 0;
+                autom2.inic = 0;
+                autom2.finc = 0;
+                autom2.nbr_trans = 0;
+                autom2.nbr_alph = 0;
+                autom2.nbr_etat = 0;
+                construireAutomateThompson(regex2, &autom2);
+                sauvgarder(autom2,"src/automate2.dot");
+                Union("src/automate1.dot","src/automate2.dot");
                 break;
             }
             case 10: {
@@ -924,7 +955,7 @@ int main(){
                 }
                 c = concatAutomates(&a1,&a2,&c);
                 automateShow(c);
-                sauvgarder(c);
+                sauvgarder(c,"src/results.dot");
                 break;
             }
             case 12:{
