@@ -965,15 +965,9 @@ int main(){
                     printf("Erreur : l'automate est vide ou mal charge !\n");
                     break;
                 }
-                a.nbr_etat = 0;
-                a.inic = 0;
-                a.finc = 0;
-                a.nbr_alph = 0;
-                a.nbr_etat = 0;
-                a.nbr_trans = 0;
                 char regex[200] = "";
                 genererRegexDepuisAutomate(&a, regex);
-                printf("voici l'expression reguliere du l'utomate:\n");
+                printf("voici l'expression reguliere du l'automate:\n");
                 printf("%s\n\n", regex);
                 break;
             }
