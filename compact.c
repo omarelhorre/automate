@@ -825,7 +825,7 @@ void genererRegexDepuisAutomate(Automate *A, char *regex) {
 }
 int menu(void){
 		int choice;
-		printf("\n-----------AUTOMATE--------\n");
+        printf("\n-----------AUTOMATE--------\n");
         printf("1. Lire l'automate depuis graph.dot .  \n2. Afficher les informations de l'automate.  \n");
         printf("3. Generer un fichier.dot .  \n4. Afficher l'etat avec le plus grand nombre des transitions.  \n");
         printf("5. Afficher les etat avec transition etiquete .  \n6. Tester un mot  \n7. extraire Mots accepter ds un fichier.\n");
