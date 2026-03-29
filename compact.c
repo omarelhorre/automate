@@ -98,6 +98,7 @@ void readDot(Automate *protocol,char *fichier){
 	protocol->nbr_trans = i;
 	fclose(f);
 }
+/*
 void Union(void)
 {
     Automate autom1;
@@ -723,7 +724,7 @@ Automate concatAutomates(Automate *A1, Automate *A2,Automate *C) {
         C->etat_finaux[C->finc++] = A2->etat_finaux[i];
     }
     return *C;
-}
+}*/
 //fct permet ajouter ou fusionner des transitions
 void ajouterOuMajTransition(Automate *A, int dep, int arriv, const char *expr) {
     if (strlen(expr) == 0) return;//ignore les expressions vide
@@ -850,7 +851,7 @@ int main(){
 	int output;
 	do{
 	    output = menu();
-	    switch(output){
+	    switch(output){/*
             case 1 : {
                 readDot(&a,"demo.dot");
                 printf("lecture du fichier avec succes.\n");
@@ -926,12 +927,13 @@ int main(){
                 automateShow(c);
                 sauvgarder(c);
                 break;
-            }
+            }*/
             case 12:{
                 char regex[200] = "";
                 genererRegexDepuisAutomate(&a, regex);
                 printf("voici l'expression reguliere du l'utomate:\n");
                 printf("%s\n\n", regex);
+                break;
             }
             case 0 : printf("Fin du programme\n"); break;
             default : printf("Entrer un choix valide s'il vous plait!\n");
