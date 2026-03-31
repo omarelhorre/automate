@@ -1,7 +1,11 @@
 digraph G {
 init [shape=point shape=point style=filled, fillcolor=white color=white];
 fin [shape=point shape=point style=filled, fillcolor=white color=white];
-init -> 9;
+init -> 7;
+7 -> 8 [label="a"];
 9 -> 10 [label="b"];
-10 -> fin;
+8 -> 9 [label="E"];
+11 -> 12 [label="b"];
+10 -> 11 [label="E"];
+12 -> fin;
 }
