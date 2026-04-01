@@ -28,3 +28,6 @@ Fragment etoileFragment(Automate *A, Fragment f);
 Fragment plusFragment(Automate *A, Fragment f);
 void appliquerOperateur(PileFragments *pileF, PileChar *pileC, Automate *A);
 void construireAutomateThompson(const char *regex, Automate *A);
+void supprimerEpsilons(Automate *A);
+void supprimerEtatsInaccessibles(Automate *A);
+void calculFermetureEpsilon(Automate *A, int etat, int *fermeture, int *taille);
