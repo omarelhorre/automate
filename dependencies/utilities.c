@@ -1,5 +1,7 @@
 #include <stdbool.h>
 #include "structs.h"
+#include "operations.h"
+#include "string.h"
 void initAutomate(Automate* a1)
 {
     a1->finc = 0;

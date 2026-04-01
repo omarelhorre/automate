@@ -1,5 +1,9 @@
 #include "structs.h"
 #include "stdbool.h"
+#include "utilities.h"
+#include "verification.h"
+#include <string.h>
+#include "operations.h"
 //fct permet ajouter ou fusionner des transitions
 void ajouterOuMajTransition(Automate *A, int dep, int arriv, const char *expr) {
     if (strlen(expr) == 0) return;//ignore les expressions vide
@@ -300,4 +304,142 @@ void appliquerOperateur(PileFragments *pileF, PileChar *pileC, Automate *A) {
     
     if (op == '+') pushFragment(pileF, unionFragments(A, f1, f2));
     else if (op == '.') pushFragment(pileF, concatFragments(A, f1, f2));
+}
+void supprimerEpsilons(Automate *A) {
+    Transition nouvelles_trans[100]; // Tableau temporaire pour stocker les nouvelles transitions
+    int nbr_nouv = 0;//taile tableu nouv
+
+            for (int i = 0; i < A->nbr_etat; i++) {//parcour les etat du l'automate
+                int etat_actuel = A->etats[i];
+                int fermeture[A->nbr_etat];//epsilon-close de chaque etat
+                int taille = 0; //nombre des element dans le tableau fermeture
+
+                calculFermetureEpsilon(A, etat_actuel, fermeture, &taille);
+                //tester si l'etat actuel devient final
+                bool devient_final = false;
+                for (int j = 0; j < taille; j++) {
+                    if (rechercherEtatFinale(A, fermeture[j])) {
+                        devient_final = true;
+                        break;
+                    }
+                }
+                //verifier que l'etat actuel n'est pas deja un etat finale
+                if (devient_final && !rechercherEtatFinale(A, etat_actuel) && A->finc < 10) {
+                    A->etat_finaux[A->finc] = etat_actuel;
+                    A->finc++;
+                }
+                //chercher les nouvelles transitions a creer
+                for (int j = 0; j < taille; j++) {
+                    int etat_p = fermeture[j];
+                    
+                    // Chercher les transitions partant de p qui ne sont PAS des epsilons
+                    for (int k = 0; k < A->nbr_trans; k++) {
+                        if (A->transitions[k].etat_dep == etat_p && A->transitions[k].lettre[0] != 'E') {
+                            if (!transitionExiste(nouvelles_trans, nbr_nouv, etat_actuel, A->transitions[k].etat_arriv, A->transitions[k].lettre[0])) {
+                                nouvelles_trans[nbr_nouv]= A->transitions[k];
+                                nbr_nouv++;
+                            }
+                        }
+                    }
+                }
+            }
+    //remplacer les ancienne transition par les nouvelles
+    A->nbr_trans = 0;
+    int i = 0;
+    while(i<nbr_nouv && i<50){
+        A->transitions[i] = nouvelles_trans[i];
+        A->nbr_trans++;
+        i++;
+    }
+    printf("Les transitions epsilon ont ete supprimees avec succes.\nAfficher l'automate pour y verifier.\n");
+}
+void supprimerEtatsInaccessibles(Automate *A) {
+    Automate Acc;
+    initAutomate(&Acc);
+    recopieEtats(&Acc,A->etat_initiaux, A->inic);
+    
+    bool nouveau_trouve;//trouver tous les etats accessibles
+    do {
+        nouveau_trouve = false;
+        for (int i = 0; i < Acc.nbr_etat; i++) {
+            int etat_courant = Acc.etats[i];
+
+            for (int j = 0; j < A->nbr_trans; j++) {
+                if (A->transitions[j].etat_dep == etat_courant) {
+                    int etat_dest = A->transitions[j].etat_arriv;
+                    
+                    bool existe = false;//verifier que etat_dest n'est pas deja accessible
+                    for (int k = 0; k < A->nbr_etat; k++) {
+                        if (Acc.etats[k] == etat_dest) {
+                            existe = true;
+                            break;
+                        }
+                    }
+                    if (!existe) {
+                        Acc.etats[Acc.nbr_etat] = etat_dest;
+                        Acc.nbr_etat++;
+                        nouveau_trouve = true;
+                    }
+                }
+            }
+        }
+    } while (nouveau_trouve);
+
+    recopieEtats(A, Acc.etats, Acc.nbr_etat);
+
+    for (int i = 0; i < A->nbr_trans; i++) {
+        bool dep_accessible = false;
+        for (int k = 0; k < Acc.nbr_etat ; k++) {
+            if (A->transitions[i].etat_dep == Acc.etats[k]) { 
+                dep_accessible = true;
+                break;
+            }
+        }
+        //si l'etat depart est accessible, on garde la transition
+        if (dep_accessible) {
+            Acc.transitions[Acc.nbr_trans] = A->transitions[i];
+            Acc.nbr_trans++;
+        }
+    }
+    recopieTransition(A, Acc.transitions, Acc.nbr_trans);
+    for (int i = 0; i < A->finc; i++) {
+        bool est_accessible = false;
+        for (int k = 0; k < Acc.nbr_etat; k++) {
+            if (A->etat_finaux[i] == Acc.etats[k]) {
+                est_accessible = true;
+                break;
+            }
+        }
+        if (est_accessible) {
+            Acc.etat_finaux[Acc.finc] = A->etat_finaux[i];
+            Acc.finc++;
+        }
+    }
+    recopieEtatsFinaux(A, Acc.etat_finaux, Acc.finc);
+}
+void calculFermetureEpsilon(Automate *A, int etat, int *fermeture, int *taille) {
+    fermeture[0] = etat; // L'état lui-même fait partie de sa fermeture
+    *taille = 1;
+    //parcoure A->transitions pour trouver tous les etats accessibles par epsilon 'E'
+    for (int i = 0; i < *taille; i++) {
+        int etat_courant = fermeture[i];
+        for (int j = 0; j < A->nbr_trans; j++) {
+            if (A->transitions[j].etat_dep == etat_courant && A->transitions[j].lettre[0] == 'E') {
+                int etat_suivant = A->transitions[j].etat_arriv;
+                
+                //verifier si etat_suivant n'existe pas deja dans le tab du fermeture
+                bool exist = false;
+                for (int k = 0; k < *taille; k++) {
+                    if (fermeture[k] == etat_suivant) {
+                        exist = true;
+                        break;
+                    }
+                }
+                if (!exist) {
+                    fermeture[*taille] = etat_suivant;
+                    (*taille)++;
+                }
+            }
+        }
+    }
 }

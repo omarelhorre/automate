@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "verification.h"
+#include "operations.h"
+#include "utilities.h"
 void MaxTransitions(Automate *protocol){
 
     int sorties[20] = {0};

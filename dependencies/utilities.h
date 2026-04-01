@@ -9,7 +9,7 @@ void recopieTransition(Automate *A, Transition trans[], int taille);
 bool rechercherAlphabet(Automate *protocol, char etatChar);
 bool rechercherEtatFinale(Automate *protocol, int etatChar);
 bool transitionExiste(Transition *tab, int nbr, int dep, int arriv, char lettre);
-
+bool rechercherEtat(Automate *protocol, int etatChar);
 void FusionneEtatsInitialsFinals(Automate *A);
 void fromAtoEps(Automate* result,Automate* a1);
 void fromEpsToA(Automate* result,Automate* a1);

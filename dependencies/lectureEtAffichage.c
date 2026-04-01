@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "verification.h"
+#include "utilities.h"
 void readDot(Automate *protocol,char *fichier){
 	int i=0,inic,finc,src,dest;
     char val,ligne[100], buff[20];
