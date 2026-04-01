@@ -814,9 +814,44 @@ copy(Automate* auto1, Automate* result)
 
     }
 }
-void copyToResult(Automate auto1, Automate* result)
-{
+void changeState(Automate* auto1, Automate* auto2)
+    {
+        int current;
+    for(int i = 0 ; i<auto1->nbr_etat ; i++)
+    {
+        current = auto1->etats[i];
+        for(int j = 0 ; j<auto2->nbr_etat ; j++)
+        {
+            if(current == auto2->etats[j])
+            {
+                auto1->etats[i]-= auto1->nbr_etat;
+                 for(int k = 0; k< auto1->nbr_trans ; k++ )
+                        {
+                            if(auto1->transitions[k].etat_dep == current)
+                            auto1->transitions[k].etat_dep = auto1->etats[i];
+                            if(auto1->transitions[k].etat_arriv == current)
+                            auto1->transitions[k].etat_arriv = auto1->etats[i];
+                        }
+                 for(int l = 0 ; l<auto1->inic ; l++)
 
+                 {
+                     if(auto1->etat_initiaux[l] == current)
+                     auto1->etat_initiaux[l] = auto1->etats[i];
+                
+                }
+
+                for(int l = 0 ; l<auto1->finc ; l++)
+
+                 {
+                     if(auto1->etat_finaux[l] == current)
+                     auto1->etat_finaux[l] = auto1->etats[i];
+                
+                     }
+            }
+        }
+
+
+    }
 }
 void fromEpsToA(Automate* result)
 {
@@ -846,10 +881,6 @@ void UnionStructure(Automate* auto1, Automate* auto2, Automate* result)
 
     initAutomate(result);
 
-    fromEpsToA(auto1);
-    fromEpsToA(auto2);
-    fromAtoEps(auto1);
-    fromAtoEps(auto2);
 }
 
 void genererRegexDepuisAutomate(Automate *A, char *regex) {
