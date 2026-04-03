@@ -130,7 +130,6 @@ void determiniserAutomate(Automate *nonD, Automate *D) {
 
 void trois(Automate* a)
 {
-    printf("success");
     Automate* aDet = malloc(sizeof(Automate));
     Automate* aMin = malloc(sizeof(Automate));
     initAutomate(aDet);
@@ -138,7 +137,10 @@ void trois(Automate* a)
     determiniserAutomate(a,aDet);
     sauvgarder(*aDet,"automateDeterministe.dot");
     printf("success");
-    /* minimiser(aInit,aDet);
-    sauvgarder(*aDet,"../automateDeterminise.dot");   */  
+    supprimerEpsilons(a);
+    supprimerEtatsInaccessibles(a);
+    minimiser(a,aMin);
+    sauvgarder(*aMin,"../automateMinimaliste.dot"); 
+    printf("les fichiers sont enregsitres avec succes") 
 
 }
