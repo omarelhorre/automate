@@ -163,11 +163,7 @@ int estFinal(Automate *A, int etat) {
     return 0;
 }
 
-void copierAlphabet(Automate *dest, Automate *src){
-    dest->nbr_alph = src->nbr_alph;
-    for(int i = 0; i < src->nbr_alph; i++)
-        dest->Alphabet[i] = src->Alphabet[i];
-}
+
 
 Automate minimiserMoore(Automate *A) {
     int n = A->nbr_etat;
@@ -237,8 +233,7 @@ Automate minimiserMoore(Automate *A) {
     // Initialiser M à zéro/vide ici... (initAutomate(&M))
 
     initAutomate(&M);
-    copierAlphabet(&M, A);
-
+    recopieAlphabet(&M,A->Alphabet,A->nbr_alph);
     // Déterminer le nombre de groupes uniques
     int max_g = 0;
     for (int i = 0; i < n; i++) if (groupe[i] > max_g) max_g = groupe[i];
