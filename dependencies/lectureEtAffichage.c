@@ -82,7 +82,7 @@ void automateShow(Automate protocol){
 }
 void sauvgarder(Automate a,const char* str){
     int i;
-    FILE *f = fopen(str, "w");
+    FILE *f = fopen(str, "w+");
     checkFile(f);
     fprintf(f, "digraph G {\n");
     fprintf(f, "init [shape=point shape=point style=filled, fillcolor=white color=white];\n");

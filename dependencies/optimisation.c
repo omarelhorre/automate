@@ -126,18 +126,19 @@ void determiniserAutomate(Automate *nonD, Automate *D) {
 
 void trois(Automate* a)
 {
+    sauvgarder(*a,"automateInit.dot");
     Automate* aDet = malloc(sizeof(Automate));
     Automate* aMin = malloc(sizeof(Automate));
     initAutomate(aDet);
     initAutomate(aMin);
     determiniserAutomate(a,aDet);
     sauvgarder(*aDet,"automateDeterministe.dot");
-    printf("success");
+    printf("Deterministe");
     supprimerEpsilons(a);
     supprimerEtatsInaccessibles(a);
-    minimiser(a,aMin);
-    sauvgarder(*aMin,"../automateMinimaliste.dot"); 
-    printf("les fichiers sont enregsitres avec succes") 
+    *aMin = minimiserMoore(a);
+    sauvgarder(*aMin,"automateMinimaliste.dot"); 
+    printf("les fichiers sont enregsitres avec succes");
 
 }
 int trouverDestination(Automate *A, int etat, char symbole) {

@@ -21,7 +21,8 @@ int menu(void){
         printf("11. Concatenation de 2 automates.\n");
         printf("12. Generer une expression reguliere a partir d'un automate.\n");
         printf("13. determinisation de l'automate\n");
-        printf("14. Generer les trois fichiers (automate initial, deterministe, minimaliste).\n");
+        printf("15. Generer automate minimaliste.\n");
+        printf("17. Generer les trois fichiers (automate initial, deterministe, minimaliste).\n");
         printf("0. Quitter le programme.\nEffectuer un choix: ");
         scanf("%d",&choice);
 		return choice;
@@ -160,7 +161,7 @@ int main(){
                 a = M;
                 break;
             }
-            case 15:{
+            case 17:{
             Automate* aInit = malloc(sizeof(Automate));
             initAutomate(aInit);
             readDot(aInit,"demo.dot");
