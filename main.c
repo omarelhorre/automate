@@ -152,6 +152,15 @@ int main(){
                 break;
             }
             case 14:{
+                Automate M;
+                initAutomate(&M);
+                M = minimiserMoore(&a);
+                printf("Automate minimaliste :\n");
+                automateShow(M);
+                a = M;
+                break;
+            }
+            case 15:{
             Automate* aInit = malloc(sizeof(Automate));
             initAutomate(aInit);
             readDot(aInit,"demo.dot");

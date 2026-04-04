@@ -138,3 +138,146 @@ void trois(Automate* a)
     sauvgarder(*aDet,"../automateDeterminise.dot");   */  
 
 }
+int trouverDestination(Automate *A, int etat, char symbole) {
+    for (int i = 0; i < A->nbr_trans; i++) {
+        if (A->transitions[i].etat_dep == etat && A->transitions[i].lettre[0] == symbole)
+            return A->transitions[i].etat_arriv;
+    }
+    return -1; // État puits implicite ou erreur
+}
+
+int indiceEtat(Automate *A, int etat) {
+    for (int i = 0; i < A->nbr_etat; i++) {
+        if (A->etats[i] == etat) return i;
+    }
+    return -1;
+}
+
+int estFinal(Automate *A, int etat) {
+    for (int i = 0; i < A->finc; i++) {
+        if (A->etat_finaux[i] == etat) return 1;
+    }
+    return 0;
+}
+
+void copierAlphabet(Automate *dest, Automate *src){
+    dest->nbr_alph = src->nbr_alph;
+    for(int i = 0; i < src->nbr_alph; i++)
+        dest->Alphabet[i] = src->Alphabet[i];
+}
+
+Automate minimiserMoore(Automate *A) {
+    int n = A->nbr_etat;
+    int groupe[20]; //classe de l'état à la position i dans A->etats[]
+    int nouveau_groupe[20];//tableau temporaire pour calculer la nouvelle partition
+
+    // 1. Partition initiale P0 (Finaux vs Non-Finaux)
+    for (int i = 0; i < n; i++) {
+        groupe[i] = estFinal(A, A->etats[i]) ? 1 : 0;
+    }
+
+    int stable = 0;
+    while (!stable) {
+        stable = 1;
+        int groupe_courant = 0;
+
+        // On réinitialise nouveau_groupe à -1 pour marquer les états non traités
+        for (int i = 0; i < n; i++) nouveau_groupe[i] = -1;
+
+        for (int i = 0; i < n; i++) {
+            if (nouveau_groupe[i] != -1) continue;
+
+            // L'état i définit un nouveau groupe
+            nouveau_groupe[i] = groupe_courant;
+
+            for (int j = i + 1; j < n; j++) {
+                if (nouveau_groupe[j] != -1) continue;
+
+                // Deux états sont équivalents s'ils sont dans le même groupe actuel
+                // ET s'ils vont vers les mêmes groupes pour chaque symbole
+                if (groupe[i] == groupe[j]) {
+                    int identiques = 1;
+                    for (int k = 0; k < A->nbr_alph; k++) {
+                        char s = A->Alphabet[k];
+                        int destI = trouverDestination(A, A->etats[i], s);
+                        int destJ = trouverDestination(A, A->etats[j], s);
+
+                        int gI = (destI == -1) ? -1 : groupe[indiceEtat(A, destI)];
+                        int gJ = (destJ == -1) ? -1 : groupe[indiceEtat(A, destJ)];
+
+                        if (gI != gJ) {
+                            identiques = 0;
+                            break;
+                        }
+                    }
+                    if (identiques) {
+                        nouveau_groupe[j] = groupe_courant;
+                    }
+                }
+            }
+            groupe_courant++;
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (groupe[i] != nouveau_groupe[i]) {
+                stable = 0;
+                break;
+            }
+        }
+
+        // Mise à jour pour la prochaine itération
+        for (int i = 0; i < n; i++) groupe[i] = nouveau_groupe[i];
+    }
+
+    // 3. Construction de l'automate minimal M
+    Automate M;
+    // Initialiser M à zéro/vide ici... (initAutomate(&M))
+
+    initAutomate(&M);
+    copierAlphabet(&M, A);
+
+    // Déterminer le nombre de groupes uniques
+    int max_g = 0;
+    for (int i = 0; i < n; i++) if (groupe[i] > max_g) max_g = groupe[i];
+    M.nbr_etat = max_g + 1;
+    for (int i = 0; i < M.nbr_etat; i++) M.etats[i] = i;
+
+    // État initial
+    M.etat_initiaux[0] = groupe[indiceEtat(A, A->etat_initiaux[0])];
+    M.inic = 1;
+    
+    // États finaux (un groupe est final si l'un de ses membres l'était)
+    for (int g = 0; g <= max_g; g++) {
+        for (int i = 0; i < n; i++) {
+            if (groupe[i] == g && estFinal(A, A->etats[i])) {
+                M.etat_finaux[M.finc++] = g;
+                break; // Un seul représentant suffit
+            }
+        }
+    }
+
+    // Transitions
+    for (int g = 0; g <= max_g; g++) {
+        // Prendre le premier état trouvé appartenant au groupe g comme représentant
+        int rep = -1;
+        for (int i = 0; i < n; i++) {
+            if (groupe[i] == g) { rep = i; break; }
+        }
+
+        for (int k = 0; k < A->nbr_alph; k++) {
+            char s = A->Alphabet[k];
+            int dest = trouverDestination(A, A->etats[rep], s);
+            if (dest != -1) {
+                int g_dest = groupe[indiceEtat(A, dest)];
+                // Ajouter la transition (g --s--> g_dest) dans M
+                M.transitions[M.nbr_trans].etat_dep = g;
+                M.transitions[M.nbr_trans].etat_arriv = g_dest;
+                M.transitions[M.nbr_trans].lettre[0] = s;
+                M.transitions[M.nbr_trans].lettre[1] = '\0';
+                M.nbr_trans++;
+            }
+        }
+    }
+
+    return M;
+}
