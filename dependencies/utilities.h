@@ -2,7 +2,7 @@
 #define UTILITIES_H
 #include "structs.h"
 #include <stdbool.h>
-
+void representerEnsembleVide(const char* str);
 void initAutomate(Automate* a1);
 void recopieEtats(Automate *A, int Etats[], int taille);
 void recopieAlphabet(Automate *A, char Alphabet[], int taille);

@@ -34,5 +34,8 @@ typedef struct {
     int nbr;          
     int id; 
 } EnsembleEtats;
-
+typedef struct {
+    int e1;
+    int e2;
+} Couple;
 #endif
