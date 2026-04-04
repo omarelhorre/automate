@@ -2,8 +2,12 @@ digraph G {
     init [shape=point];
     fin [shape=point];
     init -> 0;
+    0 -> 0 [label="b"];
     0 -> 1 [label="a"];
-    0 -> 3 [label="b"];
-    3 -> fin;
+    1 -> 0 [label="b"];
+    1 -> 2 [label="a"];
+    2 -> 0 [label="b"];
+    2 -> 1 [label="a"];
+    2 -> fin;
     1 -> fin;
 }

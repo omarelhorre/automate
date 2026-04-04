@@ -17,7 +17,7 @@ void recopieEtats(Automate *A, int Etats[], int taille){
     }
     A->nbr_etat = taille;
 }
-void recopieAlphabet(Automate *A, int Alphabet[], int taille){
+void recopieAlphabet(Automate *A, char Alphabet[], int taille){
     for(int i =0;i<taille; i++){
         A->Alphabet[i]= Alphabet[i];
     }
