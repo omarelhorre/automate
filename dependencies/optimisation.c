@@ -6,11 +6,6 @@
 #include "structs.h"
 #include "lectureEtAffichage.h"
 #include <stdlib.h>
-typedef struct {
-    int etats[20]; 
-    int nbr;          
-    int id; 
-} EnsembleEtats;
 
 //structure pour représenter les nouvelles etats
 
@@ -85,7 +80,7 @@ void determiniserAutomate(Automate *nonD, Automate *D) {
                 int etat_dep = courant->etats[j];//chercher les destinations possibles depuis les etats de Ensemble de dep
 
                 for(int k = 0; k < nonD->nbr_trans; k++) {
-                    if(nonD->transitions[k].etat_dep == etat_dep && strcmp(nonD->transitions[k].lettre[0], lettre) == 0){
+                    if(nonD->transitions[k].etat_dep == etat_dep && nonD->transitions[k].lettre[0] == lettre){
                         ajouterEtat_EnsSansRep(&Ens_dest, nonD->transitions[k].etat_arriv);//ajouter l'etat_arrive dans ensemble dest apres verification
                     }
                 }
@@ -114,7 +109,8 @@ void determiniserAutomate(Automate *nonD, Automate *D) {
                 //ajouter des transitions dans l'Automate D
                 D->transitions[D->nbr_trans].etat_dep = courant->id;
                 D->transitions[D->nbr_trans].etat_arriv = exist;//id de Ens_nouv ou un Ens deja existant
-                strcpy(D->transitions[D->nbr_trans].lettre[0], lettre);
+                D->transitions[D->nbr_trans].lettre[0] =  lettre;
+                D->transitions[D->nbr_trans].lettre[1] = '\0';
                 D->nbr_trans++;
             }
         }

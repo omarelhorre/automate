@@ -1,3 +1,5 @@
+#ifndef OPERATIONS_H
+#define OPERATIONS_H
 #include "structs.h"
 Automate concatAutomates(Automate *A1, Automate *A2,Automate *C);
 
@@ -31,3 +33,5 @@ void construireAutomateThompson(const char *regex, Automate *A);
 void supprimerEpsilons(Automate *A);
 void supprimerEtatsInaccessibles(Automate *A);
 void calculFermetureEpsilon(Automate *A, int etat, int *fermeture, int *taille);
+//void convertirAFD(Automate *AFN, Automate *AFD);
+#endif

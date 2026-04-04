@@ -29,4 +29,10 @@ typedef struct PileChar {
     char tab[100]; 
     int sommet; 
 } PileChar;
+typedef struct {
+    int etats[20]; 
+    int nbr;          
+    int id; 
+} EnsembleEtats;
+
 #endif

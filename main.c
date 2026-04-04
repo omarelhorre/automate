@@ -20,7 +20,8 @@ int menu(void){
         printf("10. Generer un automate a partir d'une expression reguliere.\n");
         printf("11. Concatenation de 2 automates.\n");
         printf("12. Generer une expression reguliere a partir d'un automate.\n");
-        printf("13. Generer les trois fichiers (automate initial, deterministe, minimaliste).\n");
+        printf("13. determinisation de l'automate\n");
+        printf("14. Generer les trois fichiers (automate initial, deterministe, minimaliste).\n");
         printf("0. Quitter le programme.\nEffectuer un choix: ");
         scanf("%d",&choice);
 		return choice;
@@ -35,7 +36,8 @@ int main(){
             case 1 : {
                 readDot(&a,"demo.dot");
                 printf("lecture du fichier avec succes.\n");
-                break; }
+                break; 
+            }
             case 2 : {
                 automateShow(a);
                 break;}
@@ -141,12 +143,21 @@ int main(){
                 printf("%s\n\n", regex);
                 break;
             }
-            case 13:
+            case 13:{
+                Automate D;
+                printf("Automate determinise :\n");
+                determiniserAutomate(&a,&D);
+                automateShow(D);
+                a = D;
+                break;
+            }
+            case 14:{
             Automate* aInit = malloc(sizeof(Automate));
             initAutomate(aInit);
             readDot(aInit,"demo.dot");
             trois(aInit);
             break;
+            }
             case 0 : printf("Fin du programme\n"); break;
             default : printf("Entrer un choix valide s'il vous plait!\n");
         }
