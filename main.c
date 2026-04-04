@@ -21,7 +21,10 @@ int menu(void){
         printf("11. Concatenation de 2 automates.\n");
         printf("12. Generer une expression reguliere a partir d'un automate.\n");
         printf("13. determinisation de l'automate\n");
-        printf("14. Generer les trois fichiers (automate initial, deterministe, minimaliste).\n");
+        printf("14. Generer automate minimaliste.\n");
+        printf("15. Produit de deux automates.\n");       
+        printf("16. Mots engendre par un automate.\n");
+        printf("17. Generer les trois fichiers (automate initial, deterministe, minimaliste).\n");
         printf("0. Quitter le programme.\nEffectuer un choix: ");
         scanf("%d",&choice);
 		return choice;
@@ -160,7 +163,7 @@ int main(){
                 a = M;
                 break;
             }
-            case 15:{
+            case 17:{
             Automate* aInit = malloc(sizeof(Automate));
             initAutomate(aInit);
             readDot(aInit,"demo.dot");
@@ -171,6 +174,21 @@ int main(){
                 printf("Minimisation de l'automate...\n");
                 const char *nomFichier = "mots_reconnus.txt";
                 ecrireMotsAutomateMinimal(&a, nomFichier);
+                break;
+            }
+            case 15:
+            {
+                printf("Produit de deux automates...\n");   
+                Automate* A1 = malloc(sizeof(Automate));
+                Automate* A2 = malloc(sizeof(Automate));
+                Automate* C = malloc(sizeof(Automate));
+                readDot(A1,"src/automate1.dot");
+                readDot(A2,"src/automate2.dot");
+                produitAutomates(A1,A2,C);
+                if(C->finc == 0)
+                representerEnsembleVide("src/resultat.dot");
+                else
+                sauvgarder(*C,"src/resultat.dot");
                 break;
             }
             case 0 : printf("Fin du programme\n"); break;

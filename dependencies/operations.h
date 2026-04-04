@@ -34,4 +34,5 @@ void supprimerEpsilons(Automate *A);
 void supprimerEtatsInaccessibles(Automate *A);
 void calculFermetureEpsilon(Automate *A, int etat, int *fermeture, int *taille);
 //void convertirAFD(Automate *AFN, Automate *AFD);
+Automate minimiserMoore(Automate *A);
 #endif

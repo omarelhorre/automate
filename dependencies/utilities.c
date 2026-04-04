@@ -1,7 +1,9 @@
 #include <stdbool.h>
+#include <stdio.h>
 #include "structs.h"
 #include "operations.h"
 #include "string.h"
+#include "verification.h"
 void initAutomate(Automate* a1)
 {
     a1->finc = 0;
@@ -165,6 +167,19 @@ void changeState(Automate* auto1, Automate* auto2)
 
 
     }
+}
+
+void representerEnsembleVide(const char* str)
+{
+    FILE* ptr = fopen(str,"w");
+    checkFile(ptr);
+    fprintf(ptr,"digraph{\n");
+    fprintf(ptr, "init [shape=point shape=point style=filled, fillcolor=white color=white];\n");
+    fprintf(ptr, "fin [shape=point shape=point style=filled, fillcolor=white color=white];\n");
+    fprintf(ptr, "init -> 0;\n");
+    fprintf(ptr, "1 -> fin;\n");
+    fprintf(ptr, "}\n");
+    fclose(ptr);
 }
 void copy(Automate* auto1, Automate* result)
 {

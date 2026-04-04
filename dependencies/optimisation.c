@@ -126,16 +126,19 @@ void determiniserAutomate(Automate *nonD, Automate *D) {
 
 void trois(Automate* a)
 {
-    printf("success");
+    sauvgarder(*a,"automateInit.dot");
     Automate* aDet = malloc(sizeof(Automate));
     Automate* aMin = malloc(sizeof(Automate));
     initAutomate(aDet);
     initAutomate(aMin);
     determiniserAutomate(a,aDet);
     sauvgarder(*aDet,"automateDeterministe.dot");
-    printf("success");
-    /* minimiser(aInit,aDet);
-    sauvgarder(*aDet,"../automateDeterminise.dot");   */  
+    printf("Deterministe");
+    supprimerEpsilons(a);
+    supprimerEtatsInaccessibles(a);
+    *aMin = minimiserMoore(a);
+    sauvgarder(*aMin,"automateMinimaliste.dot"); 
+    printf("les fichiers sont enregsitres avec succes");
 
 }
 int trouverDestination(Automate *A, int etat, char symbole) {
@@ -160,11 +163,7 @@ int estFinal(Automate *A, int etat) {
     return 0;
 }
 
-void copierAlphabet(Automate *dest, Automate *src){
-    dest->nbr_alph = src->nbr_alph;
-    for(int i = 0; i < src->nbr_alph; i++)
-        dest->Alphabet[i] = src->Alphabet[i];
-}
+
 
 Automate minimiserMoore(Automate *A) {
     int n = A->nbr_etat;
@@ -234,8 +233,7 @@ Automate minimiserMoore(Automate *A) {
     // Initialiser M à zéro/vide ici... (initAutomate(&M))
 
     initAutomate(&M);
-    copierAlphabet(&M, A);
-
+    recopieAlphabet(&M,A->Alphabet,A->nbr_alph);
     // Déterminer le nombre de groupes uniques
     int max_g = 0;
     for (int i = 0; i < n; i++) if (groupe[i] > max_g) max_g = groupe[i];
@@ -309,4 +307,107 @@ void ecrireMotsAutomateMinimal(Automate *A, const char *nom_fichier) {
     char mot_courant[5 + 1];
     genererMotsRec(&M, M.etat_initiaux[0], mot_courant, 0, f);
     fclose(f);
+}
+
+
+//ihssan
+void produitAutomates(Automate *A1, Automate *A2, Automate *C) {
+    int i, j;
+
+    // 1?? Initialisation
+    initAutomate(C);
+
+    // 2?? Déterminer l'alphabet commun
+    for(i = 0; i < A1->nbr_alph; i++) {
+        if(rechercherAlphabet(A2, A1->Alphabet[i])) {
+            C->Alphabet[C->nbr_alph++] = A1->Alphabet[i];
+        }
+    }
+
+    // 3?? Table pour savoir si un couple d'états a déjà été ajouté
+    int exist[20][20] = {{0}}; // attention à la taille selon tes automates
+
+    // 4?? File BFS pour parcourir tous les couples d'états
+    Couple file[40];  // file des couples à traiter
+    int tete = 0, queue = 0;
+
+    // 5?? Ajouter les couples initiaux
+    for(i = 0; i < A1->inic; i++) {
+        for(j = 0; j < A2->inic; j++) {
+            file[queue].e1 = A1->etat_initiaux[i];
+            file[queue].e2 = A2->etat_initiaux[j];
+
+            exist[A1->etat_initiaux[i]][A2->etat_initiaux[j]] = 1;
+
+            C->etats[C->nbr_etat] = queue;          // indice du couple dans C->etats
+            C->etat_initiaux[C->inic++] = queue;    // enregistrer comme état initial
+            queue++;
+        }
+    }
+
+    // 6?? BFS pour générer les transitions
+    tete = 0;
+    while(tete < queue) {
+        Couple dep = file[tete];
+        int dep_index = tete; // l'indice du couple actuel
+        tete++;
+
+        // parcourir toutes les transitions de A1 depuis dep.e1
+        for(i = 0; i < A1->nbr_trans; i++) {
+            if(A1->transitions[i].etat_dep != dep.e1) continue;
+            char *lettre = A1->transitions[i].lettre;
+            int arrivee1 = A1->transitions[i].etat_arriv;
+
+            // parcourir toutes les transitions de A2 depuis dep.e2
+            for(j = 0; j < A2->nbr_trans; j++) {
+                if(A2->transitions[j].etat_dep != dep.e2) continue;
+                if(strcmp(A2->transitions[j].lettre, lettre) != 0) continue;
+
+                int arrivee2 = A2->transitions[j].etat_arriv;
+
+                // Si le couple n'existe pas encore, l'ajouter
+                int arr_index;
+                if(!exist[arrivee1][arrivee2]) {
+                    file[queue].e1 = arrivee1;
+                    file[queue].e2 = arrivee2;
+                    arr_index = queue;
+                    exist[arrivee1][arrivee2] = 1;
+                    queue++;
+                } else {
+                    // retrouver l’indice du couple déjà existant
+                    for(arr_index = 0; arr_index < queue; arr_index++) {
+                        if(file[arr_index].e1 == arrivee1 && file[arr_index].e2 == arrivee2)
+                            break;
+                    }
+                }
+
+                // Ajouter la transition dans C
+                C->transitions[C->nbr_trans].etat_dep = dep_index;
+                C->transitions[C->nbr_trans].etat_arriv = arr_index;
+                strcpy(C->transitions[C->nbr_trans].lettre, lettre);
+                C->nbr_trans++;
+            }
+        }
+    }
+
+    // 7?? Définir les états finaux : un couple est final si e1 ET e2 sont finaux
+    for(i = 0; i < queue; i++) {
+        int e1 = file[i].e1;
+        int e2 = file[i].e2;
+
+        int est_final_A1 = 0;
+        int est_final_A2 = 0;
+
+        for(j = 0; j < A1->finc; j++)
+            if(A1->etat_finaux[j] == e1) est_final_A1 = 1;
+
+        for(j = 0; j < A2->finc; j++)
+            if(A2->etat_finaux[j] == e2) est_final_A2 = 1;
+
+        if(est_final_A1 && est_final_A2) {
+            C->etat_finaux[C->finc++] = i;
+        }
+    }
+
+  
 }
