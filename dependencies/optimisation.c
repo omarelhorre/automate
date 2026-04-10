@@ -221,7 +221,7 @@ void determiniserAutomate(Automate *nonD, Automate *D) {
 
 void trois(Automate* a)
 {
-    sauvgarder(*a,"automateInit.dot");
+    sauvgarder(*a,"test/automateDeThompson.dot");
     Automate* aDet = malloc(sizeof(Automate));
     Automate* aMin = malloc(sizeof(Automate));
     initAutomate(aDet);
@@ -229,10 +229,10 @@ void trois(Automate* a)
     supprimerEpsilons(a);
     supprimerEtatsInaccessibles(a);
     determiniserAutomate(a,aDet);
-    sauvgarder(*aDet,"automateDeterministe.dot");
+    sauvgarder(*aDet,"test/automateDeterministe.dot");
     printf("Deterministe");
     *aMin = minimiserMoore(aDet);
-    sauvgarder(*aMin,"automateMinimaliste.dot"); 
+    sauvgarder(*aMin,"test/automateMinimaliste(canonique).dot"); 
     printf("les fichiers sont enregsitres avec succes");
     free(aDet);
     free(aMin);
@@ -262,7 +262,11 @@ int estFinal(Automate *A, int etat) {
 
 
 
-Automate minimiserMoore(Automate *A) {
+Automate minimiserMoore(Automate *A1) {
+    Automate* A = malloc(sizeof(Automate));
+    supprimerEpsilons(A1);
+    supprimerEtatsInaccessibles(A1);
+    determiniserAutomate(A1,A);
     int n = A->nbr_etat;
     int groupe[20]; //classe de l'état à la position i dans A->etats[]
     int nouveau_groupe[20];//tableau temporaire pour calculer la nouvelle partition

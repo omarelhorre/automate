@@ -59,7 +59,11 @@ void UnionStructure(Automate* auto1, Automate* auto2, Automate* result)
     fromEpsToA(result,auto1);
     fromEpsToA(result,auto2);
     fromAtoEps(result,auto1);
-    fromAtoEps(result,auto2);    
+    fromAtoEps(result,auto2); 
+    result->etats[result->nbr_etat++] = 200;
+    result->etats[result->nbr_etat++] = 100;    
+
+    
 }
 
 void genererRegexDepuisAutomate(Automate *A, char *regex) {
@@ -223,7 +227,6 @@ Automate automateLettre(char lettre) {
     int fin = nouvelEtat();
 
     ajouterTransition(&A, debut, fin, lettre);
-
     A.etat_initiaux[0] = debut;
     A.inic = 1;
 

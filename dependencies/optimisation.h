@@ -1,4 +1,6 @@
 #include "structs.h"
+#include <stdbool.h>
+#include <stdio.h>
 void trois(Automate* a);
 void determiniserAutomate(Automate *nonD, Automate *D);
 bool contientEtatFinal(EnsembleEtats *ens, Automate *AFN);

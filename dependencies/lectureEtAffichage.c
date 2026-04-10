@@ -78,7 +78,7 @@ void automateShow(Automate protocol){
 	for( i = 0; i< protocol.finc ; i++){
 		printf("[%d] ",protocol.etat_finaux[i]);
 	}
-    printf("\n");
+    printf("\n\n\n");
 }
 void sauvgarder(Automate a,const char* str){
     int i;

@@ -1,6 +1,7 @@
 #ifndef OPERATIONS_H
 #define OPERATIONS_H
 #include "structs.h"
+#include <stdbool.h>
 Automate concatAutomates(Automate *A1, Automate *A2,Automate *C);
 
 void UnionStructure(Automate* auto1, Automate* auto2, Automate* result);

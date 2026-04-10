@@ -199,4 +199,18 @@ void copy(Automate* auto1, Automate* result)
     {
         result->transitions[result->nbr_trans++] = auto1->transitions[i];
     }
+
+        for(int i = 0 ; i< auto1->nbr_etat ; i++)
+    {
+        if(!rechercherEtat(result, auto1->etats[i]))
+        result->etats[result->nbr_etat++] = auto1->etats[i];
+
+    }  
+
+        for(int i = 0 ; i< auto1->nbr_alph ; i++)
+    {
+        if(!rechercherAlphabet(result, auto1->Alphabet[i]))
+        result->Alphabet[result->nbr_alph++] = auto1->Alphabet[i];
+    }  
+
 }

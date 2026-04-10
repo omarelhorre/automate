@@ -9,6 +9,7 @@
 #include "dependencies/manipulation.h"
 #include "dependencies/operations.h"
 #include "dependencies/optimisation.h"
+#include "dependencies/partieSupp.h"
 int menu(void){
 		int choice;
         printf("\n-----------AUTOMATE--------\n");
@@ -25,6 +26,7 @@ int menu(void){
         printf("15. Produit de deux automates.\n");       
         printf("16. Mots engendre par un automate.\n");
         printf("17. Generer les trois fichiers (automate initial, deterministe, minimaliste).\n");
+        printf("18. PART 6 ");
         printf("0. Quitter le programme.\nEffectuer un choix: ");
         scanf("%d",&choice);
 		return choice;
@@ -191,6 +193,10 @@ int main(){
                 else
                 sauvgarder(*C,"src/resultat.dot");
                 break;
+            }
+            case 18:
+            {
+                determinerMots("test/fichier.txt");
             }
             case 0 : printf("Fin du programme\n"); break;
             default : printf("Entrer un choix valide s'il vous plait!\n");
