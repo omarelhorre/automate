@@ -76,6 +76,7 @@ int main(){
             }
             case 7 : {
                 SaveAcceptedWords(&a);
+                printf("Les mots acceptes ont ete enregistres dans le fichier MotsAccepter.txt\n");
                 break;
             }
             case 8 : {
@@ -85,16 +86,6 @@ int main(){
                 break;
             }
             case 9:{
-                /* if(choix==1)
-                {
-
-                    UnionFichiers("src/automate1.dot","src/automate1.dot");
-                } ******/
-               /*
-                    else if(choix == 2)
-                {
-                */
-
 
                 Automate* a4 = malloc(sizeof(Automate));
                 Automate* a3 = malloc(sizeof(Automate)) ;
@@ -107,21 +98,24 @@ int main(){
                 UnionStructure(a3,a4,resultant);
                 a = *resultant;
                 printf("Union faite avec succes\n");
-            //}
-                
+                sauvgarder(a,"src/resultat.dot");
+                free(a3);
+                free(a4);
+                free(resultant);
                 break;
             }
             
             case 10: {
-                Automate* regexA;
+                Automate* regexA = malloc(sizeof(Automate));
                 char regex[100]; 
                 printf("Veuillez entrer votre expression reguliere (sans espaces) : ");
-                scanf("%s", regex); 
+                scanf(" %s", regex); 
                 initAutomate(regexA);
                 printf("\nConstruction de l'automate pour l'expression : %s\n", regex);
                 construireAutomateThompson(regex, regexA);
                 automateShow(*regexA);
                 a = *regexA;
+                free(regexA);
                 break;
             }
             case 11: {

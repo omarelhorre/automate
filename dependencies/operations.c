@@ -67,7 +67,8 @@ void UnionStructure(Automate* auto1, Automate* auto2, Automate* result)
 }
 
 void genererRegexDepuisAutomate(Automate *A, char *regex) {
-    
+    supprimerEpsilons(A);
+    supprimerEtatsInaccessibles(A);
     FusionneEtatsInitialsFinals(A);
     for (int k = 0; k < A->nbr_etat; k++) {
         int act = A->etats[k];
@@ -445,7 +446,6 @@ void supprimerEpsilons(Automate *A) {
         A->nbr_trans++;
         i++;
     }
-    printf("Les transitions epsilon ont ete supprimees avec succes.\nAfficher l'automate pour y verifier.\n");
 }
 void supprimerEtatsInaccessibles(Automate *A) {
     Automate Acc;

@@ -98,5 +98,5 @@ void sauvgarder(Automate a,const char* str){
     }
     fprintf(f, "}\n");
     fclose(f);
-    printf("Fichier 'automate_utilisateur.dot' genere avec succes.\n");
+    printf("Fichier '%s' genere avec succes.\n", str);
 }

@@ -1,1 +1,1 @@
-gcc -o main main.c dependencies/manipulation.c dependencies/optimisation.c dependencies/utilities.c dependencies/lectureEtAffichage.c dependencies/verification.c dependencies/operations.c
+gcc -o main main.c dependencies/manipulation.c dependencies/optimisation.c dependencies/utilities.c dependencies/lectureEtAffichage.c dependencies/verification.c dependencies/operations.c dependencies/partieSupp.c dependencies/creeTableSymbole.c 
