@@ -6,7 +6,7 @@
 #include "utilities.h"
 #include "verification.h"
 #include "structs.h"
-
+#include "creeTableSymbole.h"
 void determinerMots(const char* nomFichier)
 {
     Automate* auto1 = malloc(sizeof(Automate));
@@ -22,5 +22,9 @@ void determinerMots(const char* nomFichier)
     printf("Lecture de l'expression reguliere est faite avec succes: %s \n",buffer);
     construireAutomateThompson(buffer, auto1);
     trois(auto1);
-    //VerifierFichier(test/AcceptedWords,auto1);
+    creerTableSymboles(autoMin, nomFichier);
+    free(auto1);
+    free(autoDet);
+    free(autoMin);
+    free(buffer);
 }
