@@ -13,6 +13,7 @@ void ajouterOuMajTransition(Automate *A, int dep, int arriv, const char *expr) {
         if (A->transitions[i].etat_dep == dep && A->transitions[i].etat_arriv == arriv) {
             //fusionne les 2 expressions qui on meme etat depart et meme etat arrive avec l'operateur +
             char temp[200];
+            if (strcmp(A->transitions[i].lettre, expr) == 0) return;
             snprintf(temp, 200, "(%s+%s)", A->transitions[i].lettre, expr);//imprime l'expression dans temp sans depasser 200 cases
             strncpy(A->transitions[i].lettre, temp, 200);
             return;
@@ -94,10 +95,37 @@ void genererRegexDepuisAutomate(Automate *A, char *regex) {
                         char ExpR_act_j[200];
                         strcpy(ExpR_act_j, A->transitions[j].lettre);
 
-                        // concatener: (Entree) + (Boucle) + (Sortie)
+                        char clean_in[200] = "";
+                        char clean_out[200] = "";
+
+                        if (strcmp(ExpR_i_act, "E") != 0) {
+                        int len_in = strlen(ExpR_i_act);
+                        // Si c'est 1 lettre, OU si c'est déjà entouré de parenthèses (...)
+                        if (len_in == 1 || (ExpR_i_act[0] == '(' && ExpR_i_act[len_in - 1] == ')')) {
+                            strcpy(clean_in, ExpR_i_act); 
+                        } else {
+                            snprintf(clean_in, 200, "(%s)", ExpR_i_act);
+                        }
+                        }
+
+                        // 2. Gérer la sortie
+                        if (strcmp(ExpR_act_j, "E") != 0) {
+                            int len_out = strlen(ExpR_act_j);
+                            // Pareil pour la sortie
+                            if (len_out == 1 || (ExpR_act_j[0] == '(' && ExpR_act_j[len_out - 1] == ')')) {
+                                strcpy(clean_out, ExpR_act_j);
+                            } else {
+                                snprintf(clean_out, 200, "(%s)", ExpR_act_j);
+                            }
+                        }
+
+                        // 3. Construire la nouvelle expression : entrée + boucle + sortie
                         char nouveau_chemin[200];
-                        snprintf(nouveau_chemin, 200, "(%s)%s(%s)", ExpR_i_act, boucle, ExpR_act_j);
-                        
+                        snprintf(nouveau_chemin, 200, "%s%s%s", clean_in, boucle, clean_out);
+
+                        if (strlen(nouveau_chemin) == 0) {
+                            strcpy(nouveau_chemin, "E");
+                        }
                         // Ajouter le pont direct de i vers j
                         ajouterOuMajTransition(A, etat_i, etat_j, nouveau_chemin);
                     }

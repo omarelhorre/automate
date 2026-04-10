@@ -26,7 +26,7 @@ int menu(void){
         printf("15. Produit de deux automates.\n");       
         printf("16. Mots engendre par un automate.\n");
         printf("17. Generer les trois fichiers de la structure a (automate initial, deterministe, minimaliste).\n");
-        printf("18. Generer automate d'une reg exp canonique, thompson, deterministe et generer la table ");
+        printf("18. Generer automate d'une reg exp canonique, thompson, deterministe et generer la table \n");
         printf("0. Quitter le programme.\nEffectuer un choix: ");
         scanf("%d",&choice);
 		return choice;
@@ -168,9 +168,14 @@ int main(){
             break;
             }
             case 16:{
-                printf("Minimisation de l'automate...\n");
+                if(a.nbr_etat == 0){
+                    printf("Erreur : l'automate est vide ou mal charge !\n");
+                    break;
+                }
+                a = minimiserMoore(&a);
                 const char *nomFichier = "mots_reconnus.txt";
                 ecrireMotsAutomateMinimal(&a, nomFichier);
+                printf("Les mots engendres par l'automate ont ete enregistres dans le fichier %s\n", nomFichier);
                 break;
             }
             case 15:
