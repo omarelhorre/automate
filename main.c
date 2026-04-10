@@ -13,10 +13,10 @@
 int menu(void){
 		int choice;
         printf("\n-----------AUTOMATE--------\n");
-        printf("1. Lire l'automate depuis graph.dot .  \n2. Afficher les informations de l'automate.  \n");
-        printf("3. Generer un fichier.dot .  \n4. Afficher l'etat avec le plus grand nombre des transitions.  \n");
-        printf("5. Afficher les etat avec transition etiquete .  \n6. Tester un mot  \n7. extraire Mots accepter ds un fichier.\n");
-        printf("8. supprimer les epsilons dans l'automate.\n");
+        printf("1. Lire l'automate depuis demo.dot .  \n2. Afficher l'automate.  \n");
+        printf("3. Generer un fichier.dot dans \"automate_utilisateur.dot\"  .  \n4. Afficher l'etat avec le plus grand nombre des transitions(sortantes, entrantes).  \n");
+        printf("5. Afficher les etats avec transition etiquete à partir d'une lettre entré par l'utilisateur .  \n6. Tester un mot si il appartient au langage engendré  \n7. extraire tous les mots accepter dans un fichier.\n");
+        printf("8. supprimer les epsilons transitions dans la structure automate.\n");
         printf("9. union de 2 automates.\n");
         printf("10. Generer un automate a partir d'une expression reguliere.\n");
         printf("11. Concatenation de 2 automates.\n");
@@ -25,8 +25,8 @@ int menu(void){
         printf("14. Generer automate minimaliste.\n");
         printf("15. Produit de deux automates.\n");       
         printf("16. Mots engendre par un automate.\n");
-        printf("17. Generer les trois fichiers (automate initial, deterministe, minimaliste).\n");
-        printf("18. PART 6 ");
+        printf("17. Generer les trois fichiers de la structure a (automate initial, deterministe, minimaliste).\n");
+        printf("18. Generer automate d'une reg exp canonique, thompson, deterministe et generer la table ");
         printf("0. Quitter le programme.\nEffectuer un choix: ");
         scanf("%d",&choice);
 		return choice;
@@ -106,23 +106,22 @@ int main(){
                 readDot(a3,"src/automate2.dot");
                 UnionStructure(a3,a4,resultant);
                 a = *resultant;
+                printf("Union faite avec succes\n");
             //}
                 
                 break;
             }
             
             case 10: {
+                Automate* regexA;
                 char regex[100]; 
                 printf("Veuillez entrer votre expression reguliere (sans espaces) : ");
                 scanf("%s", regex); 
-                a.nbr_etat = 0; 
-                a.nbr_trans = 0; 
-                a.nbr_alph = 0; 
-                a.inic = 0; 
-                a.finc = 0;
+                initAutomate(regexA);
                 printf("\nConstruction de l'automate pour l'expression : %s\n", regex);
-                construireAutomateThompson(regex, &a);
-                automateShow(a);
+                construireAutomateThompson(regex, regexA);
+                automateShow(*regexA);
+                a = *regexA;
                 break;
             }
             case 11: {
@@ -191,8 +190,9 @@ int main(){
                 produitAutomates(A1,A2,C);
                 if(C->finc == 0)
                 representerEnsembleVide("src/resultat.dot");
-                else
+                else{
                 sauvgarder(*C,"src/resultat.dot");
+                a = *C;}
                 break;
             }
             case 18:
