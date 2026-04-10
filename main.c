@@ -167,10 +167,11 @@ int main(){
                 break;
             }
             case 17:{
-            Automate* aInit = malloc(sizeof(Automate));
-            initAutomate(aInit);
-            readDot(aInit,"demo.dot");
-            trois(aInit);
+            if(a.nbr_etat == 0){
+                    printf("Erreur : l'automate est vide ou mal charge !\n");
+                    break;
+                }
+            trois(&a);
             break;
             }
             case 16:{

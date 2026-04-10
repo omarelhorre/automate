@@ -221,7 +221,7 @@ void determiniserAutomate(Automate *nonD, Automate *D) {
 
 void trois(Automate* a)
 {
-    sauvgarder(*a,"test/automateDeThompson.dot");
+    sauvgarder(*a,"test/automateInitiale.dot");
     Automate* aDet = malloc(sizeof(Automate));
     Automate* aMin = malloc(sizeof(Automate));
     initAutomate(aDet);
