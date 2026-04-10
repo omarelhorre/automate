@@ -198,6 +198,7 @@ int main(){
             case 18:
             {
                 determinerMots("test/fichier.txt");
+                break;
             }
             case 0 : printf("Fin du programme\n"); break;
             default : printf("Entrer un choix valide s'il vous plait!\n");

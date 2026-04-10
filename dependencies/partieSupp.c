@@ -9,6 +9,7 @@
 #include "creeTableSymbole.h"
 void determinerMots(const char* nomFichier)
 {
+    TableSymboles table;
     Automate* auto1 = malloc(sizeof(Automate));
     Automate* autoDet = malloc(sizeof(Automate));
     Automate* autoMin = malloc(sizeof(Automate));
@@ -22,7 +23,8 @@ void determinerMots(const char* nomFichier)
     printf("Lecture de l'expression reguliere est faite avec succes: %s \n",buffer);
     construireAutomateThompson(buffer, auto1);
     trois(auto1);
-    creerTableSymboles(autoMin, nomFichier);
+    table = creerTableSymboles(autoMin, "test/exempleC.txt");
+    afficherTableSymboles(&table);
     free(auto1);
     free(autoDet);
     free(autoMin);
