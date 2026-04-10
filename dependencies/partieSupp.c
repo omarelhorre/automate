@@ -23,6 +23,7 @@ void determinerMots(const char* nomFichier)
     printf("Lecture de l'expression reguliere est faite avec succes: %s \n",buffer);
     construireAutomateThompson(buffer, auto1);
     trois(auto1);
+    readDot(autoMin, "test/automateMinimaliste(canonique).dot"); 
     table = creerTableSymboles(autoMin, "test/exempleC.txt");
     afficherTableSymboles(&table);
     free(auto1);
