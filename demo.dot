@@ -1,0 +1,17 @@
+digraph G {
+init [shape=point shape=point style=filled, fillcolor=white color=white];
+fin [shape=point shape=point style=filled, fillcolor=white color=white];
+init -> 0;
+0 -> 1 [label="a"];
+0 -> 7 [label="E"];
+7 -> 1 [label="E"];
+1 -> 1 [label="a"];
+1 -> 1 [label="b"];
+    
+    // Le chemin maudit : l'état mort
+0 -> 2 [label="b"];
+0 -> 0 [label="b"];
+2 -> 2 [label="a"];
+2 -> 2 [label="b"];
+2 -> fin;
+}

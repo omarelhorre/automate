@@ -1,0 +1,4 @@
+digraph G {
+init [shape=point shape=point style=filled, fillcolor=white color=white];
+fin [shape=point shape=point style=filled, fillcolor=white color=white];
+}

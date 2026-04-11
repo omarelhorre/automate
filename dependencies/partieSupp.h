@@ -1,0 +1,1 @@
+void determinerMots(const char* nomFichier);
